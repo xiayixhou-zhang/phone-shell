@@ -1,0 +1,112 @@
+*{box-sizing:border-box;font-family: -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial;}
+body{margin:0;background:#f6f6f8;}
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.phone{
+  width: 390px; max-width: 92vw;
+  height: 780px; max-height: 92vh;
+  border-radius: 36px;
+  background: #111;
+  padding: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.22);
+}
+.statusbar{
+  height: 44px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  font-weight:600;
+  font-size:14px;
+}
+.statusbar .back{color:#fff;text-decoration:none;font-size:18px;}
+.statusbar .title{flex:1;text-align:center;margin-right:30px;}
+.status-right{opacity:.9;display:flex;gap:10px;align-items:center;}
+.screen{
+  height: calc(100% - 44px);
+  border-radius: 26px;
+  background: linear-gradient(180deg,#ffe6f1 0%, #ffffff 55%, #f2f6ff 100%);
+  padding: 14px;
+  position:relative;
+  overflow:hidden;
+}
+.top-card{
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.top-card .name{font-size:18px;font-weight:800;}
+.top-card .mood{margin-top:6px;font-size:14px;opacity:.8}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding-top: 8px;
+}
+.app{
+  border:0;background:transparent;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  text-decoration:none;color:#111;
+}
+.icon{
+  width:60px;height:60px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(0,0,0,.06);
+  font-size:26px;
+}
+.label{font-size:12px;opacity:.85}
+
+.icon.wechat{background:#22c55e;position:relative;border:0}
+.icon.wechat .b1,.icon.wechat .b2{position:absolute;display:block;background:#fff;border-radius:999px}
+.icon.wechat .b1{width:30px;height:22px;left:12px;top:16px}
+.icon.wechat .b2{width:24px;height:18px;left:24px;top:26px;opacity:.92}
+.icon.wechat .b1::after,.icon.wechat .b2::after{
+  content:"";position:absolute;left:7px;top:8px;width:4px;height:4px;background:#22c55e;border-radius:50%;
+  box-shadow: 10px 0 0 #22c55e;
+}
+.icon.moodicon{background:#ff76b3;color:#fff;border:0}
+
+.dock{
+  position:absolute;left:14px;right:14px;bottom:14px;
+  height: 64px;
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 20px;
+  display:flex;align-items:center;justify-content:space-around;
+  padding: 10px;
+}
+.dock-btn{
+  border:0;background:rgba(0,0,0,.06);
+  padding:10px 12px;border-radius:14px;
+  font-weight:700;
+}
+.dock-btn, .dock-btn:visited{color:#111;text-decoration:none}
+
+/* chat */
+.screen.chat{display:flex;flex-direction:column;gap:10px;padding-bottom:80px;}
+.msg{
+  max-width: 78%;
+  padding:10px 12px;border-radius:14px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(0,0,0,.06);
+  line-height:1.35;
+}
+.msg.me{align-self:flex-end;background:#ffebf4}
+.msg.other{align-self:flex-start}
+
+.composer{
+  position:absolute;left:14px;right:14px;bottom:14px;
+  display:flex;gap:10px;
+}
+.composer input{
+  flex:1;border-radius:14px;border:1px solid rgba(0,0,0,.12);
+  padding:12px 12px;font-size:14px;
+}
+.composer button{
+  border:0;border-radius:14px;padding:12px 14px;font-weight:800;
+  background:#22c55e;color:#fff;
+}
