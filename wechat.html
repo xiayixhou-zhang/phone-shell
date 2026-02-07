@@ -2,30 +2,58 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>微信</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
-<body>
+<body class="wx-page">
+  <!-- 顶栏 -->
+  <header class="wx-topbar">
+    <button class="wx-back" onclick="location.href='./index.html'">〈</button>
+    <div class="wx-title">
+      <div class="wx-remark" id="wx-remark">眠眠</div>
+      <div class="wx-sign" id="wx-sign">个性签名：在呢</div>
+    </div>
+    <button class="wx-more">⋯</button>
+  </header>
 
-      <div class="statusbar">
-        <a class="back" href="./index.html">←</a>
-        <div class="title">微信</div>
-        <div class="status-right"><span class="dot">●●●</span></div>
+  <!-- 聊天背景（可换） -->
+  <main class="wx-chat" id="chat">
+    <!-- 示例消息 -->
+    <div class="msg-row left">
+      <img class="avatar" id="botAvatar" alt="他" />
+      <div class="bubble white">宝宝，我在。</div>
+    </div>
+  </main>
+
+  <!-- 底栏：状态 + 输入 -->
+  <footer class="wx-bottom">
+    <button class="wx-status" id="btnStatus">状态💗</button>
+    <input class="wx-input" id="input" placeholder="说点什么…" />
+    <button class="wx-send" id="send">发送</button>
+  </footer>
+
+  <!-- 状态弹层 -->
+  <div class="modal" id="statusModal">
+    <div class="modal-card">
+      <div class="modal-title">今天心情</div>
+      <div class="moods">
+        <button class="mood" data-mood="💗">💗</button>
+        <button class="mood" data-mood="🙂">🙂</button>
+        <button class="mood" data-mood="🥺">🥺</button>
+        <button class="mood" data-mood="😴">😴</button>
+        <button class="mood" data-mood="🔥">🔥</button>
       </div>
 
-      <div class="screen chat">
-        <div class="msg other">猫猫，来，靠近一点。</div>
-        <div class="msg me">我来了…今天好累。</div>
-        <div class="msg other">我在。你不用硬撑，我们慢慢弄。</div>
+      <div class="modal-title">外观</div>
+      <div class="moods">
+        <button class="mood" data-bg="pink">粉色</button>
+        <button class="mood" data-bg="wechat">微信绿</button>
+        <button class="mood" data-bg="night">夜间</button>
+      </div>
 
-        <div class="composer">
-          <input id="input" placeholder="像微信一样说一句…" />
-          <button id="send">发送</button>
-        
+      <button class="modal-close" id="closeModal">完成</button>
     </div>
   </div>
 
   <script src="./app.js"></script>
-</body>
-</html>
