@@ -133,3 +133,155 @@ html, body{
   box-sizing: border-box;
   padding-bottom: 90px; /* 给 dock 留位置，避免挡住内容 */
 }
+/* ===== WeChat page ===== */
+.wx-page{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#f5f5f5;
+  font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.wx-topbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  background:#f7f7f7;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+
+.wx-back, .wx-more{
+  border:none;
+  background:transparent;
+  font-size:20px;
+  padding:6px 8px;
+}
+
+.wx-title{ flex:1; min-width:0; }
+.wx-remark{ font-weight:700; font-size:16px; line-height:1.2; }
+.wx-sign{ font-size:12px; color:rgba(0,0,0,.55); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.wx-chat{
+  flex:1;
+  padding:12px;
+  overflow:auto;
+  background-size:cover;
+  background-position:center;
+}
+
+/* 三种背景 */
+.wx-chat.bg-pink{ background: linear-gradient(180deg,#ffe6f1,#fff); }
+.wx-chat.bg-wechat{ background: #e9f6ef; }
+.wx-chat.bg-night{ background: linear-gradient(180deg,#121212,#1f1f1f); }
+
+.msg-row{
+  display:flex;
+  gap:8px;
+  margin:10px 0;
+  align-items:flex-end;
+}
+
+.msg-row.right{ justify-content:flex-end; }
+.msg-row.right .avatar{ order:2; }
+.msg-row.right .bubble{ order:1; }
+
+.avatar{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  background:#ddd;
+  object-fit:cover;
+}
+
+.bubble{
+  max-width:72%;
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:15px;
+  line-height:1.35;
+  word-break:break-word;
+  position:relative;
+}
+
+.bubble.white{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.06);
+}
+
+.bubble.green{
+  background:#95ec69; /* 微信绿气泡 */
+  border:1px solid rgba(0,0,0,.06);
+}
+
+.wx-bottom{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  background:#f7f7f7;
+  border-top:1px solid rgba(0,0,0,.06);
+}
+
+.wx-status{
+  border:none;
+  background:#fff;
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:14px;
+}
+
+.wx-input{
+  flex:1;
+  border:none;
+  border-radius:12px;
+  padding:10px 12px;
+  background:#fff;
+  font-size:15px;
+  outline:none;
+}
+
+.wx-send{
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  background:#07c160;
+  color:#fff;
+  font-weight:700;
+}
+
+/* modal */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  background:rgba(0,0,0,.35);
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.modal.show{ display:flex; }
+
+.modal-card{
+  width:min(420px, 100%);
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+}
+.modal-title{ font-weight:700; margin:10px 0 8px; }
+.moods{ display:flex; flex-wrap:wrap; gap:10px; }
+.mood{
+  border:none;
+  background:#f2f2f2;
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:16px;
+}
+.modal-close{
+  width:100%;
+  margin-top:12px;
+  border:none;
+  background:#111;
+  color:#fff;
+  padding:12px;
+  border-radius:12px;
+}
