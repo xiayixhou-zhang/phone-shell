@@ -123,11 +123,29 @@ function wireWechat(){
   });
 
   // 状态弹层
-  $("btnStatus")?.addEventListener("click", ()=> $("statusModal").classList.add("show"));
-  $("closeModal")?.addEventListener("click", ()=> $("statusModal").classList.remove("show"));
-  $("statusModal")?.addEventListener("click", (e)=>{
-    if(e.target.id === "statusModal") $("statusModal").classList.remove("show");
-  });
+  // 状态弹层（强制显示/隐藏，不靠 CSS）
+$("btnStatus")?.addEventListener("click", () => {
+  const m = $("statusModal");
+  if (!m) return;
+  m.style.display = "flex";
+  m.classList.add("show");
+});
+
+$("closeModal")?.addEventListener("click", () => {
+  const m = $("statusModal");
+  if (!m) return;
+  m.style.display = "none";
+  m.classList.remove("show");
+});
+
+$("statusModal")?.addEventListener("click", (e) => {
+  const m = $("statusModal");
+  if (!m) return;
+  if (e.target === m) {
+    m.style.display = "none";
+    m.classList.remove("show");
+  }
+});
 
   // 选心情 + 选背景
   document.querySelectorAll(".mood[data-mood]").forEach(btn=>{
