@@ -204,3 +204,100 @@ btnSend?.addEventListener("click", sendText);
 textInput?.addEventListener("keydown", (e)=>{
   if(e.key === "Enter") sendText();
   });
+// ====== details page bindings (P2) ======
+(function(){
+  if(document.title !== "聊天详情") return;
+
+  const KEY_AVATAR = "wx_bot_avatar";
+  const avatarBotPreview = document.getElementById("avatarBotPreview");
+  const btnUploadAvatar = document.getElementById("btnUploadAvatar");
+  const avatarPicker = document.getElementById("avatarPicker");
+
+  const btnSearchInPage = document.getElementById("btnSearchInPage");
+  const searchModal = document.getElementById("searchModal");
+  const searchKey = document.getElementById("searchKey");
+  const doSearch = document.getElementById("doSearch");
+  const closeSearch = document.getElementById("closeSearch");
+  const searchResult = document.getElementById("searchResult");
+
+  const btnBg = document.getElementById("btnBg");
+  const bgModal = document.getElementById("bgModal");
+  const btnPickBg = document.getElementById("btnPickBg");
+  const btnClearBg = document.getElementById("btnClearBg");
+  const btnCloseBg = document.getElementById("btnCloseBg");
+  const bgPicker = document.getElementById("bgPicker");
+
+  const btnClear = document.getElementById("btnClear");
+
+  // 头像预览
+  const savedAvatar = localStorage.getItem(KEY_AVATAR);
+  if(avatarBotPreview){
+    avatarBotPreview.style.backgroundSize = "cover";
+    avatarBotPreview.style.backgroundPosition = "center";
+    if(savedAvatar) avatarBotPreview.style.backgroundImage = `url(${savedAvatar})`;
+  }
+
+  btnUploadAvatar?.addEventListener("click", ()=> avatarPicker?.click());
+  avatarPicker?.addEventListener("change", async ()=>{
+    const f = avatarPicker.files?.[0];
+    avatarPicker.value = "";
+    if(!f) return;
+    const dataUrl = await fileToDataURL(f);
+    localStorage.setItem(KEY_AVATAR, dataUrl);
+    if(avatarBotPreview) avatarBotPreview.style.backgroundImage = `url(${dataUrl})`;
+  });
+
+  // 查找
+  function openSearch(){ searchModal?.classList.add("show"); if(searchResult) searchResult.innerHTML=""; }
+  function closeS(){ searchModal?.classList.remove("show"); }
+  btnSearchInPage?.addEventListener("click", openSearch);
+  closeSearch?.addEventListener("click", closeS);
+
+  doSearch?.addEventListener("click", ()=>{
+    const key = (searchKey?.value || "").trim();
+    if(!key) return;
+    const list = loadChat();
+    const hits = list.filter(m => m.type==="text" && m.content.includes(key));
+    if(!searchResult) return;
+    if(!hits.length) { searchResult.textContent = "没有找到。"; return; }
+    searchResult.innerHTML = hits.slice(-30).map(m =>
+      `<div style="padding:6px 0;border-top:1px solid #f0f0f0;">
+        <div style="color:#888;font-size:12px;">${m.side==="right"?"我":"他"}</div>
+        <div>${escapeHtml(m.content)}</div>
+      </div>`
+    ).join("");
+  });
+
+  // 背景
+  function openBg(){ bgModal?.classList.add("show"); }
+  function closeBg(){ bgModal?.classList.remove("show"); }
+  btnBg?.addEventListener("click", openBg);
+  btnCloseBg?.addEventListener("click", closeBg);
+  btnPickBg?.addEventListener("click", ()=> bgPicker?.click());
+
+  bgPicker?.addEventListener("change", async ()=>{
+    const f = bgPicker.files?.[0];
+    bgPicker.value = "";
+    if(!f) return;
+    const dataUrl = await fileToDataURL(f);
+    localStorage.setItem(KEY_BG, dataUrl);
+  });
+
+  btnClearBg?.addEventListener("click", ()=>{
+    localStorage.removeItem(KEY_BG);
+  });
+
+  // 清空
+  btnClear?.addEventListener("click", ()=>{
+    if(confirm("确定清空聊天记录吗？")){
+      localStorage.removeItem(KEY_CHAT);
+      alert("已清空。");
+    }
+  });
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[s]));
+  }
+})();
