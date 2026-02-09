@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>聊天详情</title>
+  <link rel="stylesheet" href="./wechat.css" />
+</head>
+
+<body class="wx">
+  <header class="wx-topbar">
+    <button class="wx-nav wx-back" onclick="history.back()"></button>
+    <div class="wx-top-mid">
+      <div class="wx-name">聊天详情</div>
+      <div class="wx-sub"></div>
+    </div>
+    <div style="width:44px;"></div>
+  </header>
+
+  <main class="wx-panel">
+    <section class="wx-card">
+      <div class="wx-row">
+        <div class="wx-avatar-big" id="avatarBotPreview"></div>
+        <div class="wx-avatar-big add">＋</div>
+      </div>
+
+      <div class="wx-row">
+        <button class="wx-btn" id="btnUploadAvatar">上传头像</button>
+        <input id="avatarPicker" type="file" accept="image/*" hidden />
+      </div>
+    </section>
+
+    <section class="wx-list">
+      <div class="wx-li" id="btnSearchInPage">
+        <span>查找聊天内容</span><span class="wx-arrow">›</span>
+      </div>
+
+      <div class="wx-li">
+        <span>消息免打扰</span>
+        <label class="wx-switch"><input id="swMute" type="checkbox"><i></i></label>
+      </div>
+
+      <div class="wx-li">
+        <span>置顶聊天</span>
+        <label class="wx-switch"><input id="swPin" type="checkbox"><i></i></label>
+      </div>
+
+      <div class="wx-li" id="btnBg">
+        <span>设置当前聊天背景</span><span class="wx-arrow">›</span>
+      </div>
+
+      <div class="wx-li danger" id="btnClear">
+        <span>清空聊天记录</span><span class="wx-arrow">›</span>
+      </div>
+
+      <div class="wx-li" onclick="location.href='./wechat-profile.html'">
+        <span>朋友资料</span><span class="wx-arrow">›</span>
+      </div>
+
+      <div class="wx-li" onclick="location.href='./wechat-settings.html'">
+        <span>设置</span><span class="wx-arrow">›</span>
+      </div>
+    </section>
+
+    <!-- 查找弹层 -->
+    <div class="modal" id="searchModal">
+      <div class="modal-card">
+        <div class="modal-title">查找聊天内容</div>
+        <input class="wx-input" id="searchKey" placeholder="输入关键词…" />
+        <div class="modal-actions">
+          <button class="wx-btn" id="doSearch">查找</button>
+          <button class="wx-btn ghost" id="closeSearch">关闭</button>
+        </div>
+        <div class="search-result" id="searchResult"></div>
+      </div>
+    </div>
+
+    <!-- 背景弹层 -->
+    <div class="modal" id="bgModal">
+      <div class="modal-card">
+        <div class="modal-title">设置聊天背景</div>
+        <button class="wx-btn" id="btnPickBg">上传背景图</button>
+        <button class="wx-btn ghost" id="btnClearBg">清除背景</button>
+        <button class="wx-btn ghost" id="btnCloseBg">完成</button>
+        <input id="bgPicker" type="file" accept="image/*" hidden />
+        </div>
+    </div>
+  </main>
+
+  <script src="./wechat.js"></script>
+</body>
+</html>
