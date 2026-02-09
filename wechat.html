@@ -67,7 +67,100 @@
   </div>
 
   <script src="./app.js"></script>
+  <script src="./app.js"></script>
+
+<script>
+(function(){
+  const chat = document.getElementById("chat");
+  const btnStatus = document.getElementById("btnStatus");
+  const sign = document.getElementById("wx-sign");
+  const remark = document.getElementById("wx-remark");
+  const modal = document.getElementById("statusModal");
+
+  if(!chat || !btnStatus) return;
+
+  function applyBg(bg){
+    chat.classList.remove("bg-pink","bg-wechat","bg-night");
+    chat.classList.add("bg-" + bg);
+    localStorage.setItem("bg", bg);
+  }
+
+  function showMood(mood){
+    // 顶栏显示：把状态挂在备注后面（最像“头顶状态”）
+    if(remark){
+      // 先把原本备注取出来（去掉以前可能加过的状态）
+      const base = remark.textContent.replace(/\s+[💗🙃🥺🥲😞😭😤😖😱🤒]+$/,"");
+      remark.textContent = base + " " + mood;
+    }else if(sign){
+      sign.textContent = (sign.textContent.split(" · 状态：")[0]) + " · 状态：" + mood;
+    }
+    localStorage.setItem("mood", mood);
+  }
+
+  function fallbackPush(text, side){
+    // 如果 app.js 里的 pushMsg 能用，就用它；不行就自己塞一条
+    if(typeof window.pushMsg === "function"){
+      window.pushMsg(text, side);
+      return;
+    }
+    const row = document.createElement("div");
+    row.className = "msg-row " + (side === "right" ? "right":"left");
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + (side === "right" ? "green":"white");
+    bubble.textContent = text;
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function botText(mood){
+    // 优先用你项目里的 getBotReply（以后接API也会走这里）
+    if(typeof window.getBotReply === "function"){
+      return window.getBotReply(mood);
+    }
+    // 兜底一句
+    return "我看到你换状态了，我在。";
+  }
+
+  // 进入页面时恢复上次状态/背景
+  const savedMood = localStorage.getItem("mood") || "💗";
+  const savedBg = localStorage.getItem("bg") || "pink";
+  showMood(savedMood);
+  applyBg(savedBg);
+
+  // 绑定：选心情
+  document.querySelectorAll(".mood[data-mood]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const mood = btn.dataset.mood;
+      showMood(mood);
+
+      // 关闭弹层（可选）
+      if(modal) modal.classList.remove("show");
+
+      // 他主动说一句
+      setTimeout(()=>{
+        fallbackPush(botText(mood), "left");
+      }, 300);
+    });
+  });
+
+  // 绑定：选外观
+  document.querySelectorAll(".mood[data-bg]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const bg = btn.dataset.bg;
+      applyBg(bg);
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
-.modal { display: none; }
-.modal.show { display: flex; }
+</body>
+</html>
