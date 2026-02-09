@@ -184,5 +184,35 @@ function getBotReply(mood){
   // 以后接 API，只改这一行：
   // return await askApiForMood(mood);
   }
+// ===== 强制：微信页状态显示 + 状态触发回复 =====
+(function(){
+  const chat = document.getElementById("chat");
+  if(!chat) return; // 不在微信页就不执行
 
+  // 显示状态到顶栏
+  function showMood(){
+    const badge = document.getElementById("moodBadge");
+    if(badge) badge.textContent = (localStorage.getItem("mood") || "💗");
+  }
+  showMood();
+
+  // 让他回一句（走你已经做好的 getBotReply -> botReplyForMood）
+  function botSay(){
+    const mood = localStorage.getItem("mood") || "💗";
+    setTimeout(()=>{
+      const reply = getBotReply(mood);
+      pushMsg(reply, "left");
+    }, 300);
+  }
+
+  // 绑定：点某个表情
+  document.querySelectorAll(".mood[data-mood]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const mood = btn.dataset.mood;
+      localStorage.setItem("mood", mood);
+      showMood();   // 顶栏立刻显示
+      botSay();     // 他主动说话
+      });
+  });
+})();
                   
