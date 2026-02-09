@@ -6,32 +6,33 @@
   <title>微信</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
+
 <body class="wx-page">
   <!-- 顶栏 -->
   <header class="wx-topbar">
     <button class="wx-back" onclick="location.href='./index.html'">〈</button>
+
     <div class="wx-title">
       <div class="wx-remark" id="wx-remark">
-  眠眠 <span id="moodBadge" class="mood-badge"></span>
+        眠眠 <span id="moodBadge" class="mood-badge"></span>
       </div>
       <div class="wx-sign" id="wx-sign">个性签名：在呢</div>
     </div>
+
     <button class="wx-more">⋯</button>
   </header>
 
-  <!-- 聊天背景（可换） -->
+  <!-- 聊天区 -->
   <main class="wx-chat" id="chat">
-    <!-- 示例消息 -->
     <div class="msg-row left">
       <img class="avatar" id="botAvatar" alt="他" />
       <div class="bubble white">宝宝，我在。</div>
     </div>
   </main>
 
-  <!-- 底栏：状态 + 输入 -->
+  <!-- 底栏 -->
   <footer class="wx-bottom">
-    <button class="wx-status" id="btnStatus"
-  onclick="document.getElementById('statusModal').classList.add('show')">状态💗</button>
+    <button class="wx-status" id="btnStatus">状态💗</button>
     <input class="wx-input" id="input" placeholder="说点什么…" />
     <button class="wx-send" id="send">发送</button>
   </footer>
@@ -41,7 +42,6 @@
     <div class="modal-card">
       <div class="modal-title">今天心情</div>
       <div class="moods">
-        
         <button class="mood" data-mood="💗">💗</button>
         <button class="mood" data-mood="🙃">🙃</button>
         <button class="mood" data-mood="🥺">🥺</button>
@@ -61,106 +61,127 @@
         <button class="mood" data-bg="night">夜间</button>
       </div>
 
-      <button class="modal-close" id="closeModal"
-  onclick="document.getElementById('statusModal').classList.remove('show')">完成</button>
+      <button class="modal-close" id="closeModal">完成</button>
     </div>
   </div>
 
+  <!-- 你如果 app.js 里还有别的全局逻辑就保留它；否则也可以删掉 -->
   <script src="./app.js"></script>
-  <script src="./app.js"></script>
 
-<script>
-(function(){
-  const chat = document.getElementById("chat");
-  const btnStatus = document.getElementById("btnStatus");
-  const sign = document.getElementById("wx-sign");
-  const remark = document.getElementById("wx-remark");
-  const modal = document.getElementById("statusModal");
+  <script>
+  (() => {
+    const chat = document.getElementById("chat");
+    const modal = document.getElementById("statusModal");
+    const btnStatus = document.getElementById("btnStatus");
+    const closeModal = document.getElementById("closeModal");
+    const moodBadge = document.getElementById("moodBadge");
 
-  if(!chat || !btnStatus) return;
+    if (!chat || !modal || !btnStatus) return;
 
-  function applyBg(bg){
-    chat.classList.remove("bg-pink","bg-wechat","bg-night");
-    chat.classList.add("bg-" + bg);
-    localStorage.setItem("bg", bg);
-  }
+    // ---------- UI helpers ----------
+    function openModal(){ modal.classList.add("show"); }
+    function hideModal(){ modal.classList.remove("show"); }
 
-  function showMood(mood){
-    // 顶栏显示：把状态挂在备注后面（最像“头顶状态”）
-    if(remark){
-      // 先把原本备注取出来（去掉以前可能加过的状态）
-      const base = remark.textContent.replace(/\s+[💗🙃🥺🥲😞😭😤😖😱🤒]+$/,"");
-      remark.textContent = base + " " + mood;
-    }else if(sign){
-      sign.textContent = (sign.textContent.split(" · 状态：")[0]) + " · 状态：" + mood;
+    function applyBg(bg){
+      chat.classList.remove("bg-pink","bg-wechat","bg-night");
+      chat.classList.add("bg-" + bg);
+      localStorage.setItem("bg", bg);
     }
-    localStorage.setItem("mood", mood);
-  }
 
-  function fallbackPush(text, side){
-    // 如果 app.js 里的 pushMsg 能用，就用它；不行就自己塞一条
-    if(typeof window.pushMsg === "function"){
-      window.pushMsg(text, side);
-      return;
+    function setMoodBadge(mood){
+      if (moodBadge) moodBadge.textContent = mood;
+      localStorage.setItem("mood", mood);
     }
-    const row = document.createElement("div");
-    row.className = "msg-row " + (side === "right" ? "right":"left");
 
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
+    function appendMsg(text, side){
+      const row = document.createElement("div");
+      row.className = "msg-row " + (side === "right" ? "right" : "left");
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble " + (side === "right" ? "green":"white");
-    bubble.textContent = text;
+      if (side === "left") {
+        const img = document.createElement("img");
+        img.className = "avatar";
+        // 复用页面里的 botAvatar（如果你在别处设置了 src，这里也会跟着显示）
+        const botAvatar = document.getElementById("botAvatar");
+        if (botAvatar && botAvatar.getAttribute("src")) img.src = botAvatar.getAttribute("src");
+        img.alt = "他";
+        row.appendChild(img);
+      } else {
+        // 右侧如果你想要头像，也可以在这里加
+        const spacer = document.createElement("div");
+        spacer.className = "avatar";
+        row.appendChild(spacer);
+      }
 
-    row.appendChild(avatar);
-    row.appendChild(bubble);
-    chat.appendChild(row);
-    chat.scrollTop = chat.scrollHeight;
-  }
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (side === "right" ? "green" : "white");
+      bubble.textContent = text;
 
-  function botText(mood){
-    // 优先用你项目里的 getBotReply（以后接API也会走这里）
-    if(typeof window.getBotReply === "function"){
-      return window.getBotReply(mood);
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+
+      return { row, bubble };
     }
-    // 兜底一句
-    return "我看到你换状态了，我在。";
-  }
 
-  // 进入页面时恢复上次状态/背景
-  const savedMood = localStorage.getItem("mood") || "💗";
-  const savedBg = localStorage.getItem("bg") || "pink";
-  showMood(savedMood);
-  applyBg(savedBg);
+    function appendTyping(){
+      const { row, bubble } = appendMsg("…", "left");
+      bubble.classList.add("typing");
+      return () => row.remove();
+    }
 
-  // 绑定：选心情
-  document.querySelectorAll(".mood[data-mood]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const mood = btn.dataset.mood;
-      showMood(mood);
+    // ---------- API call ----------
+    async function sendMoodToAPI(mood){
+      // 先把 mood 显示成“我发出的”
+      appendMsg(mood, "right");
 
-      // 关闭弹层（可选）
-      if(modal) modal.classList.remove("show");
+      const removeTyping = appendTyping();
 
-      // 他主动说一句
-      setTimeout(()=>{
-        fallbackPush(botText(mood), "left");
-      }, 300);
+      // 禁用按钮防连点（可选）
+      const moodBtns = document.querySelectorAll(".mood[data-mood]");
+      moodBtns.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch("/api/reply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ emoji: mood })
+        });
+        if (!res.ok) throw new Error("bad response");
+
+        const data = await res.json();
+        removeTyping();
+        appendMsg(data.reply ?? "（空回复）", "left");
+      } catch (e) {
+        removeTyping();
+        appendMsg("连接失败（API 没通或报错）", "left");
+      } finally {
+        moodBtns.forEach(b => b.disabled = false);
+      }
+    }
+
+    // ---------- restore ----------
+    setMoodBadge(localStorage.getItem("mood") || "💗");
+    applyBg(localStorage.getItem("bg") || "pink");
+
+    // ---------- bindings ----------
+    btnStatus.addEventListener("click", openModal);
+    document.getElementById("closeModal")?.addEventListener("click", hideModal);
+
+    // 点心情：更新顶栏 + 关弹层 + 走 API
+    document.querySelectorAll(".mood[data-mood]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mood = btn.dataset.mood;
+        setMoodBadge(mood);
+        hideModal();
+        sendMoodToAPI(mood);
+      });
     });
-  });
 
-  // 绑定：选外观
-  document.querySelectorAll(".mood[data-bg]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const bg = btn.dataset.bg;
-      applyBg(bg);
-    });
-  });
-})();
-</script>
-
-</body>
-</html>
+    // 点背景：只换背景
+    document.querySelectorAll(".mood[data-bg]").forEach(btn => {
+      btn.addEventListener("click", () => applyBg(btn.dataset.bg));
+      });
+  })();
+  </script>
 </body>
 </html>
