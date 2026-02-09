@@ -286,3 +286,9 @@ html, body{
   padding:12px;
   border-radius:12px;
 }
+.mood-badge{
+  display:inline-block;
+  margin-left:6px;
+  font-size:14px;
+  opacity:.85;
+}
