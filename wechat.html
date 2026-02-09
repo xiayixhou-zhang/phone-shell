@@ -28,7 +28,8 @@
 
   <!-- 底栏：状态 + 输入 -->
   <footer class="wx-bottom">
-    <button class="wx-status" id="btnStatus">状态💗</button>
+    <button class="wx-status" id="btnStatus"
+  onclick="document.getElementById('statusModal').classList.add('show')">状态💗</button>
     <input class="wx-input" id="input" placeholder="说点什么…" />
     <button class="wx-send" id="send">发送</button>
   </footer>
@@ -58,10 +59,13 @@
         <button class="mood" data-bg="night">夜间</button>
       </div>
 
-      <button class="modal-close" id="closeModal">完成</button>
+      <button class="modal-close" id="closeModal"
+  onclick="document.getElementById('statusModal').classList.remove('show')">完成</button>
     </div>
   </div>
 
   <script src="./app.js"></script>
 </body>
 </html>
+.modal { display: none; }
+.modal.show { display: flex; }
