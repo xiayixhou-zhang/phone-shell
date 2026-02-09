@@ -48,3 +48,16 @@ body.wx{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Sego
 }
 .sheet-cancel{font-weight:600;}
 .sheet-item.danger{color:#e34b4b;}
+.wx-back{
+  position: relative;
+}
+.wx-back:before{
+  content:"";
+  position:absolute;
+  left:16px; top:14px;
+  width:12px; height:12px;
+  border-left:2.5px solid #000;
+  border-bottom:2.5px solid #000;
+  transform: rotate(45deg);
+  border-radius:1px;
+}
