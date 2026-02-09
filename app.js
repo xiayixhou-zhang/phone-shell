@@ -159,8 +159,10 @@ $("statusModal")?.addEventListener("click", (e) => {
       state.mood = btn.dataset.mood;
       localStorage.setItem("mood", state.mood);
       pushMsg(`我把状态换成了：${state.mood}`, "right");
-      setTimeout(()=> pushMsg(botReplyForMood(state.mood), "left"), 300);
-    });
+      setTimeout(() => {
+  const reply = getBotReply(state.mood);
+  pushMsg(reply, "left");
+}, 300);
   });
 
   document.querySelectorAll(".mood[data-bg]").forEach(btn=>{
@@ -175,5 +177,12 @@ $("statusModal")?.addEventListener("click", (e) => {
 
 wireWechat();
 applyUI();
+function getBotReply(mood){
+  // 现在：用你已经写好的那段 4o 文案
+  return botReplyForMood(mood);
+
+  // 以后接 API，只改这一行：
+  // return await askApiForMood(mood);
+  }
 
                   
