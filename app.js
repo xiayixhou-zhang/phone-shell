@@ -215,4 +215,47 @@ function getBotReply(mood){
       });
   });
 })();
-                  
+ // 打开/关闭设置
+function openSettings() { document.getElementById('settings-modal').style.display = 'block'; }
+function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+
+// 背景上传
+document.getElementById('bg-upload').addEventListener('change', function(e) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    document.body.style.backgroundImage = `url(${reader.result})`;
+    document.body.style.backgroundSize = 'cover';
+    localStorage.setItem('custom-bg', reader.result); // 存入本地
+  }
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+// 图标上传
+document.getElementById('icon-upload').addEventListener('change', function(e) {
+  const appKey = document.getElementById('app-selector').value;
+  const reader = new FileReader();
+  reader.onload = function() {
+    // 找到页面上所有对应的图标并替换
+    const icons = document.querySelectorAll(`img[alt="${appKey}"], .app[href*="${appKey}"] img, img[src*="${appKey}"]`);
+    icons.forEach(img => img.src = reader.result);
+    localStorage.setItem(`icon-${appKey}`, reader.result); // 存入本地
+  }
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+// 页面加载时自动恢复之前上传的图片
+window.onload = function() {
+  const savedBg = localStorage.getItem('custom-bg');
+  if(savedBg) {
+    document.body.style.backgroundImage = `url(${savedBg})`;
+    document.body.style.backgroundSize = 'cover';
+  }
+  
+  // 恢复各个图标（逻辑同上，可扩展）
+  ['wechat', 'health', 'music', 'books', 'home', 'reminders'].forEach(app => {
+    const savedIcon = localStorage.getItem(`icon-${app}`);
+    if(savedIcon) {
+       // 这里需要根据你的具体 HTML 结构匹配 img
+    }
+  });
+};                 
