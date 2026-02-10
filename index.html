@@ -12,101 +12,64 @@
     <div class="screen">
       
       <div class="top-card">
-        <div class="card-header">
-          <span class="name">猫猫</span>
-        </div>
-        <div class="mood-box" id="mood">
-          今天心情：<span class="heart-icon">🩷</span>
-        </div>
+        <div class="name">猫猫</div>
+        <div class="mood-box">今天心情：🩷</div>
       </div>
 
       <div class="grid">
-        <a class="app" href="./wechat.html">
-          <div class="icon-wrapper"><img src="./wechat.png" alt=""></div>
-          <div class="app-label">微信</div>
-        </a>
-
-        <div class="app">
-          <div class="icon-wrapper"><img src="./health.png" alt=""></div>
-          <div class="app-label">状态</div>
+        
+        <div class="widget-weather" onclick="openSettings()">
+          <img src="" id="weather-img" alt="weather">
+          <div class="widget-info">
+            <div class="location">青秀区 🔍</div>
+            <div class="temp">14°</div>
+            <div class="condition">大雾</div>
+          </div>
         </div>
 
-        <div class="app">
-          <div class="icon-wrapper"><img src="./music.png" alt=""></div>
-          <div class="app-label">一起听歌</div>
-        </div>
-
-        <div class="app">
-          <div class="icon-wrapper"><img src="./books.png" alt=""></div>
-          <div class="app-label">一起看书</div>
-        </div>
-
-        <div class="app">
-          <div class="icon-wrapper"><img src="./home.png" alt=""></div>
-          <div class="app-label">家园</div>
-        </div>
-
-        <div class="app">
-          <div class="icon-wrapper"><img src="./reminders.png" alt=""></div>
-          <div class="app-label">提醒</div>
-        </div>
+        <div class="app"><div class="icon-wrapper"><img src="./wechat.png" alt="wechat"></div><div class="app-label">微信</div></div>
+        <div class="app"><div class="icon-wrapper"><img src="./health.png" alt="health"></div><div class="app-label">状态</div></div>
+        <div class="app"><div class="icon-wrapper"><img src="./music.png" alt="music"></div><div class="app-label">一起听歌</div></div>
+        <div class="app"><div class="icon-wrapper"><img src="./books.png" alt="books"></div><div class="app-label">一起看书</div></div>
+        <div class="app"><div class="icon-wrapper"><img src="./home.png" alt="home"></div><div class="app-label">家园</div></div>
+        <div class="app"><div class="icon-wrapper"><img src="./reminders.png" alt="reminders"></div><div class="app-label">提醒</div></div>
       </div>
 
       <div class="dock">
         <div class="dock-content">
-          <div class="dock-item" onclick="location.href='./wechat.html'">
-            <div class="icon-wrapper dock-icon-img">
-                <img src="./wechat.png" alt="wechat">
-            </div>
-          </div>
-          <div class="dock-item">
-            <div class="icon-wrapper dock-icon-img">
-                <img src="./phone.png" alt="phone">
-            </div>
-          </div>
-          <div class="dock-item">
-            <div class="icon-wrapper dock-icon-img">
-                <img src="./camera.png" alt="camera">
-            </div>
-          </div>
+          <div class="dock-item"><div class="icon-wrapper"><img src="./wechat.png" alt="wechat"></div></div>
+          <div class="dock-item"><div class="icon-wrapper"><img src="./phone.png" alt="phone"></div></div>
+          <div class="dock-item"><div class="icon-wrapper"><img src="./camera.png" alt="camera"></div></div>
           <div class="dock-item" onclick="openSettings()">
-            <div class="icon-wrapper dock-icon-img">
-                <img src="./settings.png" alt="settings">
-            </div>
+            <div class="icon-wrapper"><img src="./settings.png" alt="settings"></div>
           </div>
         </div>
       </div>
 
-  <script src="./app.js"></script>
-  <div id="settings-modal" class="modal">
-  <div class="modal-content">
-    <h3>个性化设置</h3>
-    
-    <div class="setting-item">
-      <p>更换背景图 (Wallpaper)</p>
-      <input type="file" id="bg-upload" accept="image/*">
     </div>
-
-    <div class="setting-item">
-      <p>更换 App 图标 (选择对应 App)</p>
-      <select id="app-selector">
-        <option value="wechat">微信</option>
-        <option value="health">状态</option>
-        <option value="music">一起听歌</option>
-        <option value="books">一起看书</option>
-        <option value="home">家园</option>
-        <option value="reminders">提醒</option>
-      </select>
-      <input type="file" id="icon-upload" accept="image/*">
-    </div>
-
-    <button onclick="closeSettings()">关闭</button>
   </div>
-</div>
 
-<div class="dock-item" onclick="openSettings()">
-  <div class="icon-wrapper"><img src="./settings.png" id="dock-settings-img"></div>
-  <div class="app-label">设置</div>
-</div>
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <h4>个性化设置</h4>
+      <div class="s-item">更换背景：<input type="file" id="bg-upload"></div>
+      <div class="s-item">更换组件：<input type="file" id="widget-upload"></div>
+      <div class="s-item">
+        更换图标：
+        <select id="app-selector">
+          <option value="wechat">微信</option>
+          <option value="health">状态</option>
+          <option value="music">听歌</option>
+          <option value="books">看书</option>
+          <option value="home">家园</option>
+          <option value="reminders">提醒</option>
+        </select>
+        <input type="file" id="icon-upload">
+      </div>
+      <button class="close-btn" onclick="closeSettings()">完成</button>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
 </body>
 </html>
