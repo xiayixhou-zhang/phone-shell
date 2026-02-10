@@ -29,68 +29,61 @@ body { margin: 0; background: #ededed; font-family: -apple-system, sans-serif; }
 .msg.right { align-self: flex-end; flex-direction: row-reverse; }
 .msg.right .bubble { background: #95ec69; color: #000; }
 
-/* 底部输入栏整体 */
+/* 重新调整底部输入栏整体 */
 .input-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     background: #f7f7f7;
-    padding: 10px 12px 35px; /* 底部 35px 是为了避开手机底部横条 */
+    /* 增加左右内边距，特别是右边(18px)，让发送按钮往左移 */
+    padding: 10px 18px 35px 15px; 
     display: flex;
-    align-items: center; /* 垂直居中所有零件 */
-    justify-content: space-between; /* 左右拉开 */
+    align-items: center;
+    gap: 8px; /* 零件之间的间距 */
     border-top: 1px solid #ddd;
-    z-index: 999;
+    z-index: 1000;
 }
 
-/* 左侧图标 */
+/* 图片图标保持原样 */
 .icon-group {
-    width: 40px;
+    flex-shrink: 0;
     display: flex;
-    justify-content: center;
-    cursor: pointer;
-}
-.action-icon {
-    width: 26px;
-    height: 26px;
-    opacity: 0.7;
+    align-items: center;
 }
 
-/* 中间输入框容器 */
+/* 输入框：给它瘦身，不要让它挤占按钮空间 */
 .input-wrapper {
-    flex: 1; /* 自动占满剩余空间 */
-    margin: 0 8px;
+    flex: 1; /* 占据剩余的大部分空间 */
 }
+
 #user-input {
     width: 100%;
     height: 36px;
     border: none;
     border-radius: 6px;
-    padding: 0 10px;
-    font-size: 16px;
+    padding: 0 12px;
+    font-size: 15px;
     background: #ffffff;
     outline: none;
 }
 
-/* 右侧按钮容器 */
+/* 发送按钮：固定宽度，确保不会和输入框融在一起 */
 .button-group {
-    width: 60px;
-    display: flex;
-    justify-content: center;
+    flex-shrink: 0; /* 禁止缩小 */
+    margin-left: 5px; /* 手动增加与输入框的间距 */
 }
+
 #send-btn {
-    width: 100%;
+    width: 54px; /* 稍微缩小一点宽度 */
     height: 32px;
     background: #07c160;
     color: white;
     border: none;
     border-radius: 4px;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 14px;
-}
-
-/* 聊天区域记得留出底部的空位，不然最后一句会被挡住 */
-.chat-container {
-    padding-bottom: 110px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
