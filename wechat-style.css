@@ -29,11 +29,51 @@ body { margin: 0; background: #ededed; font-family: -apple-system, sans-serif; }
 .msg.right { align-self: flex-end; flex-direction: row-reverse; }
 .msg.right .bubble { background: #95ec69; color: #000; }
 
-/* 底部栏 */
+/* 底部输入栏：固定在底部，不随内容滚动 */
 .input-bar {
-    background: #f7f7f7; padding: 10px 15px 30px; 
-    display: flex; align-items: center; gap: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f7f7f7;
+    padding: 10px 15px 35px; /* 底部预留iPhone安全距离 */
+    display: flex;
+    align-items: center;
+    gap: 10px;
     border-top: 1px solid #ddd;
+    z-index: 100;
 }
-input { flex: 1; height: 35px; border: none; border-radius: 4px; padding: 0 10px; font-size: 16px; }
-button { background: #07c160; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#user-input {
+    flex: 1;
+    height: 38px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 16px;
+    background: #ffffff;
+    outline: none;
+}
+
+#send-btn {
+    background: #07c160;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* 给聊天区域底部留白，防止被输入栏遮住 */
+.chat-container {
+    padding-bottom: 100px !important;
+}
