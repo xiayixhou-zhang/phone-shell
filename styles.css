@@ -102,3 +102,29 @@ body {
     background: #007aff; color: white; border: none; 
     padding: 10px 20px; border-radius: 10px; margin-top: 10px;
 }
+/* 1. 确保图标可以被点击 */
+.app, .dock-item {
+    cursor: pointer;
+    text-decoration: none; /* 去掉超链接下划线 */
+    -webkit-tap-highlight-color: transparent; /* 去掉移动端点击阴影 */
+    position: relative;
+    z-index: 5; /* 提升层级，确保在背景之上 */
+}
+
+/* 2. 弹窗挡住点击的终极修复方案 */
+.modal {
+    display: none; /* 关键：不显示时不占位 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000; /* 只有打开时才跳到最前面 */
+}
+
+/* 3. 如果你用了 <a> 标签，记得给文字强制改色，不然会变蓝 */
+.app-label {
+    font-size: 11px;
+    margin-top: 5px;
+    color: #333 !important; 
+    text-decoration: none !important;
+}
