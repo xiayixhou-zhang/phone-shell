@@ -1,130 +1,146 @@
+/* 1. 基础设置：强制网页充满屏幕且不抖动 */
+* { box-sizing: border-box; } /* 关键：防止内边距撑破布局 */
+
 body {
     background: #ffffff !important;
     margin: 0;
-    font-family: -apple-system, sans-serif;
+    padding: 0;
+    font-family: -apple-system, "PingFang SC", sans-serif;
     display: flex;
     justify-content: center;
-    overflow: hidden;
+    overflow: hidden; /* 防止滑动 */
+    width: 100vw;
+    height: 100vh;
 }
 
 .phone-container {
     width: 100%;
     max-width: 400px;
-    height: 100vh;
-    padding: 60px 20px;
+    height: 100%;
+    padding: 50px 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 顶部卡片 */
+/* 2. 顶部卡片：猫猫和心情 */
 .top-card {
-    background: #f2f2f7;
-    border-radius: 20px;
+    background: rgba(242, 242, 247, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
     padding: 20px;
     margin-bottom: 25px;
+    width: 100%;
 }
-.name { font-size: 20px; font-weight: bold; }
-.mood-box { font-size: 13px; color: #666; margin-top: 5px; }
+.name { font-size: 22px; font-weight: bold; color: #000; }
+.mood-box { font-size: 14px; color: #666; margin-top: 8px; background: #fff; display: inline-block; padding: 4px 12px; border-radius: 12px; }
 
-/* 网格布局 */
+/* 3. 网格布局：核心修复点 */
 .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px 15px;
+    grid-template-columns: repeat(4, 1fr); /* 严格4列 */
+    gap: 25px 15px; /* 上下25px, 左右15px */
+    width: 100%;
+    align-content: start;
 }
 
-/* 天气小组件 */
+/* 4. 天气小组件：确保不撑开网格 */
 .widget-weather {
-    grid-column: span 2;
-    height: 135px;
-    background: #ebebeb;
-    border-radius: 22px;
+    grid-column: span 2; /* 占两格 */
+    height: 120px;
+    background: #f0f0f0;
+    border-radius: 24px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
+    z-index: 2;
 }
-.widget-weather img {
-    width: 100%; height: 100%; object-fit: cover;
-    position: absolute; top: 0; left: 0;
-}
-.widget-info {
-    position: relative; z-index: 2; padding: 15px;
-    color: #333; /* 默认深色，上传图片后可自选 */
-}
-.temp { font-size: 38px; font-weight: bold; margin: 5px 0; }
+.widget-weather img { width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 1; }
+.widget-info { position: relative; z-index: 2; padding: 15px; color: #333; }
+.temp { font-size: 34px; font-weight: bold; margin: 4px 0; }
 
-/* 图标样式 */
+/* 5. 图标通用样式：修复“乱飞”和“点不进” */
 .app, .dock-item {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
+    text-decoration: none !important;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
 }
+
 .icon-wrapper {
     width: 60px;
     height: 60px;
     background: #f2f2f7;
-    border-radius: 14px;
+    border-radius: 15px;
     overflow: hidden;
-    border: 1px dashed #d1d1d6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #d1d1d6; /* 上传图片后边框会自动被图片盖住 */
 }
-.icon-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-.app-label { font-size: 11px; margin-top: 5px; color: #333; }
 
-/* 底部 Dock */
+.icon-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.app-label {
+    font-size: 11px;
+    margin-top: 6px;
+    color: #333 !important;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* 6. 底部 Dock：修复缩小成一个点的问题 */
 .dock {
-    position: fixed;
+    position: absolute; /* 改为相对于容器定位更稳 */
     bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    background: rgba(242, 242, 247, 0.8);
+    left: 20px;
+    right: 20px;
+    background: rgba(242, 242, 247, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 28px;
-    padding: 15px 0;
+    border-radius: 30px;
+    padding: 12px 0;
+    z-index: 10;
 }
-.dock-content { display: flex; justify-content: space-around; align-items: center; }
-.dock-item .icon-wrapper { border: none; width: 55px; height: 55px; }
+.dock-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.dock-item .icon-wrapper {
+    border: none;
+    width: 54px;
+    height: 54px;
+    background: transparent;
+}
 
-/* 弹窗 */
+/* 7. 弹窗：彻底隐藏 */
 .modal {
     display: none;
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); z-index: 100;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
 }
 .modal-content {
-    background: white; width: 80%; margin: 100px auto;
-    padding: 25px; border-radius: 20px; text-align: center;
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    margin: 15vh auto;
+    padding: 25px;
+    border-radius: 24px;
+    text-align: center;
 }
-.s-item { margin: 15px 0; text-align: left; font-size: 14px; }
-.close-btn { 
-    background: #007aff; color: white; border: none; 
-    padding: 10px 20px; border-radius: 10px; margin-top: 10px;
-}
-/* 1. 确保图标可以被点击 */
-.app, .dock-item {
-    cursor: pointer;
-    text-decoration: none; /* 去掉超链接下划线 */
-    -webkit-tap-highlight-color: transparent; /* 去掉移动端点击阴影 */
-    position: relative;
-    z-index: 5; /* 提升层级，确保在背景之上 */
-}
-
-/* 2. 弹窗挡住点击的终极修复方案 */
-.modal {
-    display: none; /* 关键：不显示时不占位 */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000; /* 只有打开时才跳到最前面 */
-}
-
-/* 3. 如果你用了 <a> 标签，记得给文字强制改色，不然会变蓝 */
-.app-label {
-    font-size: 11px;
-    margin-top: 5px;
-    color: #333 !important; 
-    text-decoration: none !important;
-}
+.s-item { margin: 15px 0; text-align: left; }
+.close-btn { background: #007aff; color: #fff; border: none; padding: 12px 30px; border-radius: 12px; margin-top: 10px; cursor: pointer; }
