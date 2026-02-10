@@ -54,27 +54,28 @@
 
       <div class="dock">
         <div class="dock-content">
-          <div class="dock-item">
-            <div class="icon-wrapper"><img src="./wechat.png"></div>
-            <div class="app-label">微信</div>
+          <div class="dock-item" onclick="location.href='./wechat.html'">
+            <div class="icon-wrapper dock-icon-img">
+                <img src="./wechat.png" alt="wechat">
+            </div>
           </div>
           <div class="dock-item">
-            <div class="icon-wrapper"><img src="./phone.png"></div>
-            <div class="app-label">电话</div>
+            <div class="icon-wrapper dock-icon-img">
+                <img src="./phone.png" alt="phone">
+            </div>
           </div>
           <div class="dock-item">
-            <div class="icon-wrapper"><img src="./camera.png"></div>
-            <div class="app-label">相机</div>
+            <div class="icon-wrapper dock-icon-img">
+                <img src="./camera.png" alt="camera">
+            </div>
           </div>
-          <div class="dock-item">
-            <div class="icon-wrapper"><img src="./settings.png"></div>
-            <div class="app-label">设置</div>
+          <div class="dock-item" onclick="openSettings()">
+            <div class="icon-wrapper dock-icon-img">
+                <img src="./settings.png" alt="settings">
+            </div>
           </div>
         </div>
       </div>
-
-    </div>
-  </div>
 
   <script src="./app.js"></script>
   <div id="settings-modal" class="modal">
