@@ -77,5 +77,35 @@
   </div>
 
   <script src="./app.js"></script>
+  <div id="settings-modal" class="modal">
+  <div class="modal-content">
+    <h3>个性化设置</h3>
+    
+    <div class="setting-item">
+      <p>更换背景图 (Wallpaper)</p>
+      <input type="file" id="bg-upload" accept="image/*">
+    </div>
+
+    <div class="setting-item">
+      <p>更换 App 图标 (选择对应 App)</p>
+      <select id="app-selector">
+        <option value="wechat">微信</option>
+        <option value="health">状态</option>
+        <option value="music">一起听歌</option>
+        <option value="books">一起看书</option>
+        <option value="home">家园</option>
+        <option value="reminders">提醒</option>
+      </select>
+      <input type="file" id="icon-upload" accept="image/*">
+    </div>
+
+    <button onclick="closeSettings()">关闭</button>
+  </div>
+</div>
+
+<div class="dock-item" onclick="openSettings()">
+  <div class="icon-wrapper"><img src="./settings.png" id="dock-settings-img"></div>
+  <div class="app-label">设置</div>
+</div>
 </body>
 </html>
