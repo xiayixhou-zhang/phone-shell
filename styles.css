@@ -1,134 +1,59 @@
-/* 1. 全局初始化 */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* 1. 更加细腻的背景 */
 body {
-    background: linear-gradient(180deg, #fff0f3 0%, #ffffff 100%);
-    font-family: -apple-system, "SF Pro Text", "PingFang SC", sans-serif;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: #fdf2f4; /* 奶茶粉色底 */
+    background-image: radial-gradient(circle at 50% 50%, #ffffff 0%, #fdf2f4 100%);
 }
 
-/* 2. 模拟手机容器（让它在iPad中间显示，别铺满） */
-.phone-container {
-    width: 100%;
-    max-width: 400px; /* 限制宽度，防止图标变巨大 */
-    height: 100vh;
-    position: relative;
-    padding: 0 20px;
-}
-
-/* 3. 状态栏 */
-.statusbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 10px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-/* 4. 顶部卡片 - 增加博主风的圆润感 */
+/* 2. 增强版的顶部卡片 */
 .top-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 30px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 24px;
+    margin: 20px 0 35px 0;
+    /* 双重阴影：一层深阴影管厚度，一层浅阴影管范围 */
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 10px 20px -5px rgba(255, 182, 193, 0.3);
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
 }
 
-.name { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
-.mood-box { color: #888; font-size: 14px; }
-
-/* 5. 图标网格 - 核心修容区 */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 严格4列 */
-    gap: 20px 15px;
-    justify-items: center;
-}
-
-.app {
-    text-decoration: none;
-    background: none;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-/* 强制锁定图标大小！解决那个大微信的问题 */
+/* 3. 让图标像“果冻”一样 */
 .icon-wrapper {
-    width: 60px; 
-    height: 60px;
-    background: #fff;
-    border-radius: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    overflow: hidden; /* 剪掉超出部分 */
-    margin-bottom: 8px;
-    font-size: 30px; /* 针对Emoji的大小 */
+    width: 62px;
+    height: 62px;
+    background: #ffffff;
+    border-radius: 18px; /* iOS Squircle 比例 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease; /* 增加点击缩放感 */
 }
 
-.icon-wrapper img {
-    width: 100% !important; /* 强制图片撑满格子 */
-    height: 100% !important;
-    object-fit: cover; /* 裁剪成正方形 */
+/* 点击图标时会微微缩小，更有手机触感 */
+.icon-wrapper:active {
+    transform: scale(0.92);
 }
 
+/* 4. 文字标签 */
 .label {
-    font-size: 12px;
-    color: #555;
-    text-align: center;
-    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6e6e73; /* 苹果官方文字灰色 */
+    margin-top: 6px;
+    letter-spacing: 0.5px;
 }
 
-/* 6. 底部 Dock 栏 - 变成悬浮长条 */
+/* 5. 飘浮感 Dock 栏 */
 .dock {
-    position: absolute;
-    bottom: 30px;
-    left: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 35px;
-    padding: 10px 5px;
-    border: 1px solid rgba(255,255,255,0.3);
-}
-
-.dock-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.dock-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-}
-
-.dock-icon {
-    font-size: 24px;
-    margin-bottom: 4px;
-}
-
-.dock-label {
-    font-size: 10px;
-    opacity: 0.7;
+    position: fixed; /* 锁定在底部 */
+    bottom: 25px;
+    width: 90%;
+    max-width: 360px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 32px;
+    padding: 12px 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
