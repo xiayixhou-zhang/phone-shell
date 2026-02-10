@@ -2,69 +2,99 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>小手机</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>我的小手机</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   
-      <div class="statusbar">
-        <div class="time" id="time">00:00</div>
-        <div class="status-right">
-          <span class="dot">●●●</span>
-          <span class="battery">▮▮▮▯</span>
+  <div class="phone-container">
+    
+    <div class="statusbar">
+      <div class="time" id="time">23:48</div>
+      <div class="status-right">
+        <span class="signal">📶</span>
+        <span class="wifi">5G</span>
+        <span class="battery">95% 🔋</span>
+      </div>
+    </div>
+
+    <div class="screen">
+      
+      <div class="top-card">
+        <div class="card-header">
+          <span class="name">猫猫</span>
+        </div>
+        <div class="mood-box" id="mood">
+          今天心情：<span class="heart-icon">🩷</span>
         </div>
       </div>
 
-      <div class="screen">
-        <div class="top-card">
-          <div class="name">猫猫</div>
-          <div class="mood" id="mood">今天心情：🩷</div>
-        </div>
+      <div class="grid">
+        <a class="app" href="./wechat.html">
+          <div class="icon-wrapper">
+             <img src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png" alt="微信">
+          </div>
+          <div class="label">微信</div>
+        </a>
 
-        <div class="grid">
-          <a class="app" href="./wechat.html">
-            <div class="icon wechat">
-              <span class="b1"></span><span class="b2"></span>
-            </div>
-            <div class="label">微信</div>
+        <button class="app" id="btn-mood">
+          <div class="icon-wrapper mood-bg">
+            <span>💗</span>
+          </div>
+          <div class="label">状态</div>
+        </button>
+
+        <button class="app">
+          <div class="icon-wrapper music-bg">
+            <span>🎧</span>
+          </div>
+          <div class="label">一起听歌</div>
+        </button>
+
+        <button class="app">
+          <div class="icon-wrapper book-bg">
+            <span>📖</span>
+          </div>
+          <div class="label">一起看书</div>
+        </button>
+
+        <button class="app">
+          <div class="icon-wrapper home-bg">
+            <span>🏠</span>
+          </div>
+          <div class="label">家园</div>
+        </button>
+
+        <button class="app">
+          <div class="icon-wrapper calendar-bg">
+            <span>🗓️</span>
+          </div>
+          <div class="label">提醒</div>
+        </button>
+      </div>
+
+      <div class="dock">
+        <div class="dock-content">
+          <a class="dock-item" href="./wechat.html">
+            <div class="dock-icon">💬</div>
+            <span class="dock-label">微信</span>
           </a>
-
-          <button class="app" id="btn-mood">
-            <div class="icon moodicon">💗</div>
-            <div class="label">状态</div>
-          </button>
-
-          <button class="app">
-            <div class="icon">🎧</div>
-            <div class="label">一起听歌</div>
-          </button>
-
-          <button class="app">
-            <div class="icon">📖</div>
-            <div class="label">一起看书</div>
-          </button>
-
-          <button class="app">
-            <div class="icon">🏠</div>
-            <div class="label">家园</div>
-          </button>
-
-          <button class="app">
-            <div class="icon">🗓️</div>
-            <div class="label">提醒</div>
-          </button>
+          <div class="dock-item">
+            <div class="dock-icon">📞</div>
+            <span class="dock-label">电话</span>
+          </div>
+          <div class="dock-item">
+            <div class="dock-icon">📷</div>
+            <span class="dock-label">相机</span>
+          </div>
+          <div class="dock-item">
+            <div class="dock-icon">⚙️</div>
+            <span class="dock-label">设置</span>
+          </div>
         </div>
+      </div>
 
-        <div class="dock">
-          <a class="dock-btn" href="./wechat.html">微信</a>
-          <button class="dock-btn">电话</button>
-          <button class="dock-btn">相机</button>
-          <button class="dock-btn">设置</button>
-       
-    </div>
-  </div>
-
-  <script src="./app.js"></script>
+    </div> </div> <script src="./app.js"></script>
 </body>
 </html>
