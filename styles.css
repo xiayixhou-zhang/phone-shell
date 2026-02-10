@@ -1,111 +1,100 @@
-/* 1. 基础舞台：纯白背景 */
+/* 强制纯白背景 */
 body {
-    background: #ffffff;
-    font-family: -apple-system, "SF Pro Display", "PingFang SC", sans-serif;
+    background: #ffffff !important;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, sans-serif;
     display: flex;
     justify-content: center;
-    margin: 0;
-    color: #333;
 }
 
 .phone-container {
     width: 100%;
     max-width: 400px;
     height: 100vh;
-    padding: 40px 20px 0 20px; /* 增加顶部间距代替状态栏 */
+    padding: 60px 20px;
     display: flex;
     flex-direction: column;
 }
 
-/* 2. 顶部卡片：在白底上需要一点微弱的阴影才高级 */
+/* 顶部卡片 */
 .top-card {
-    background: rgba(245, 245, 247, 0.7); /* 浅灰色半透明 */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 24px;
+    background: #f2f2f7;
+    border-radius: 20px;
     padding: 20px;
-    margin-bottom: 35px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-bottom: 30px;
 }
 
-.name {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
+.name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
 
-.mood-box {
-    background: rgba(255, 255, 255, 0.8);
-    padding: 6px 12px;
-    border-radius: 10px;
-    font-size: 13px;
-    color: #666;
-    display: inline-block;
-}
-
-/* 3. 图标网格 */
+/* 图标网格布局 */
 .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 25px 15px;
+    gap: 20px 10px;
 }
 
-.app {
-    text-decoration: none;
-    border: none;
-    background: transparent;
+/* 每一个APP按钮的容器 */
+.app, .dock-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
-/* 锁定图标为标准的 iOS 圆角矩形 */
+/* 图标外壳：固定大小，防止图片变巨型 */
 .icon-wrapper {
     width: 60px;
     height: 60px;
-    border-radius: 14px;
+    background: #f9f9f9;
+    border-radius: 15px;
     overflow: hidden;
     margin-bottom: 6px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .icon-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 80%; /* 留点边距更好看 */
+    height: 80%;
+    object-fit: contain;
 }
 
+/* 文字标签：确保显示 */
 .label {
-    font-size: 11px;
-    color: #333;
-    font-weight: 400;
+    display: block !important;
+    font-size: 12px !important;
+    color: #333 !important;
+    text-align: center;
+    width: 100%;
+    font-weight: 500;
 }
 
-/* 4. 底部 Dock 栏：白底上的磨砂玻璃 */
+/* 底部 Dock */
 .dock {
     position: fixed;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    width: 92%;
-    max-width: 360px;
-    background: rgba(240, 240, 240, 0.6);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-radius: 30px;
-    padding: 12px 0;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    width: 90%;
+    background: rgba(242, 242, 247, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 15px 0;
 }
 
 .dock-content {
     display: flex;
-    justify-content: space-evenly;
-    align-items: center;
+    justify-content: space-around;
 }
 
 .dock-icon-img {
-    width: 54px; /* Dock 栏图标稍微小一点点更精致 */
-    height: 54px;
-    margin-bottom: 0;
+    width: 50px;
+    height: 50px;
 }
