@@ -1,73 +1,76 @@
-/* 1. 基础：纯白背景，去掉顶部所有干扰 */
 body {
     background: #ffffff !important;
     margin: 0;
     font-family: -apple-system, sans-serif;
     display: flex;
     justify-content: center;
+    overflow: hidden;
 }
 
 .phone-container {
     width: 100%;
     max-width: 400px;
+    height: 100vh;
     padding: 60px 20px;
-    min-height: 100vh;
+    position: relative;
 }
 
-/* 2. 顶部卡片 */
+/* 顶部卡片 */
 .top-card {
     background: #f2f2f7;
     border-radius: 20px;
     padding: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
+.name { font-size: 20px; font-weight: bold; }
+.mood-box { font-size: 13px; color: #666; margin-top: 5px; }
 
-.name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-.mood-box { background: #fff; padding: 5px 12px; border-radius: 10px; font-size: 13px; color: #666; }
-
-/* 3. 网格布局 */
+/* 网格布局 */
 .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 25px 10px;
+    gap: 20px 15px;
 }
 
-/* 4. 图标和文字的排列容器 */
+/* 天气小组件 */
+.widget-weather {
+    grid-column: span 2;
+    height: 135px;
+    background: #ebebeb;
+    border-radius: 22px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+.widget-weather img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; top: 0; left: 0;
+}
+.widget-info {
+    position: relative; z-index: 2; padding: 15px;
+    color: #333; /* 默认深色，上传图片后可自选 */
+}
+.temp { font-size: 38px; font-weight: bold; margin: 5px 0; }
+
+/* 图标样式 */
 .app, .dock-item {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-decoration: none;
 }
-
-/* 图标大小锁定 */
 .icon-wrapper {
     width: 60px;
     height: 60px;
-    background: #f2f2f7; /* 没图片时的底色 */
+    background: #f2f2f7;
     border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 8px; /* 图标离字的距离 */
-    border: 1px dashed #ccc; /* 方便你找位置 */
+    border: 1px dashed #d1d1d6;
 }
+.icon-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.app-label { font-size: 11px; margin-top: 5px; color: #333; }
 
-.icon-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* 核心：文字标签，强制显示 */
-.app-label {
-    display: block !important;
-    visibility: visible !important;
-    font-size: 12px !important;
-    color: #333 !important;
-    text-align: center !important;
-    white-space: nowrap; /* 防止文字换行 */
-}
-
-/* 5. 底部 Dock */
+/* 底部 Dock */
 .dock {
     position: fixed;
     bottom: 30px;
@@ -77,55 +80,25 @@ body {
     background: rgba(242, 242, 247, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 25px;
+    border-radius: 28px;
     padding: 15px 0;
 }
+.dock-content { display: flex; justify-content: space-around; align-items: center; }
+.dock-item .icon-wrapper { border: none; width: 55px; height: 55px; }
 
-.dock-content {
-    display: flex;
-    justify-content: space-around;
-}
-.dock-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* 删掉之前的 flex-direction: column，因为现在没字了 */
-}
-
-.dock-icon-img {
-    width: 55px;
-    height: 55px;
-    margin-bottom: 0 !important; /* 彻底去掉底部间距 */
-}
-/* 设置面板样式 */
+/* 弹窗 */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px);
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); z-index: 100;
 }
-
 .modal-content {
-    background: white;
-    margin: 20% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 300px;
-    border-radius: 20px;
-    text-align: center;
+    background: white; width: 80%; margin: 100px auto;
+    padding: 25px; border-radius: 20px; text-align: center;
 }
-
-.setting-item { margin: 20px 0; text-align: left; }
-.setting-item p { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-.setting-item input { width: 100%; font-size: 12px; }
-
-.modal-content button {
-    background: #007aff;
-    color: white;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 10px;
-    font-weight: bold;
+.s-item { margin: 15px 0; text-align: left; font-size: 14px; }
+.close-btn { 
+    background: #007aff; color: white; border: none; 
+    padding: 10px 20px; border-radius: 10px; margin-top: 10px;
 }
