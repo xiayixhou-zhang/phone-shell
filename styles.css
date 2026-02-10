@@ -1,8 +1,7 @@
-/* 强制纯白背景 */
+/* 1. 基础：纯白背景，去掉顶部所有干扰 */
 body {
     background: #ffffff !important;
     margin: 0;
-    padding: 0;
     font-family: -apple-system, sans-serif;
     display: flex;
     justify-content: center;
@@ -11,13 +10,11 @@ body {
 .phone-container {
     width: 100%;
     max-width: 400px;
-    height: 100vh;
     padding: 60px 20px;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* 顶部卡片 */
+/* 2. 顶部卡片 */
 .top-card {
     background: #f2f2f7;
     border-radius: 20px;
@@ -26,56 +23,51 @@ body {
 }
 
 .name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+.mood-box { background: #fff; padding: 5px 12px; border-radius: 10px; font-size: 13px; color: #666; }
 
-/* 图标网格布局 */
+/* 3. 网格布局 */
 .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px 10px;
+    gap: 25px 10px;
 }
 
-/* 每一个APP按钮的容器 */
+/* 4. 图标和文字的排列容器 */
 .app, .dock-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
     text-decoration: none;
-    background: none;
-    border: none;
-    padding: 0;
 }
 
-/* 图标外壳：固定大小，防止图片变巨型 */
+/* 图标大小锁定 */
 .icon-wrapper {
     width: 60px;
     height: 60px;
-    background: #f9f9f9;
-    border-radius: 15px;
+    background: #f2f2f7; /* 没图片时的底色 */
+    border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 8px; /* 图标离字的距离 */
+    border: 1px dashed #ccc; /* 方便你找位置 */
 }
 
 .icon-wrapper img {
-    width: 80%; /* 留点边距更好看 */
-    height: 80%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* 文字标签：确保显示 */
-.label {
+/* 核心：文字标签，强制显示 */
+.app-label {
     display: block !important;
+    visibility: visible !important;
     font-size: 12px !important;
     color: #333 !important;
-    text-align: center;
-    width: 100%;
-    font-weight: 500;
+    text-align: center !important;
+    white-space: nowrap; /* 防止文字换行 */
 }
 
-/* 底部 Dock */
+/* 5. 底部 Dock */
 .dock {
     position: fixed;
     bottom: 30px;
@@ -92,9 +84,4 @@ body {
 .dock-content {
     display: flex;
     justify-content: space-around;
-}
-
-.dock-icon-img {
-    width: 50px;
-    height: 50px;
 }
