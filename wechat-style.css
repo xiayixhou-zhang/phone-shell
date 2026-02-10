@@ -29,25 +29,25 @@ body { margin: 0; background: #ededed; font-family: -apple-system, sans-serif; }
 .msg.right { align-self: flex-end; flex-direction: row-reverse; }
 .msg.right .bubble { background: #95ec69; color: #000; }
 
-/* 终极修复：底部输入栏 */
+/* 1. 重新定义底部输入栏：拉近与底部的距离 */
 .input-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 90px; /* 增加高度，包含安全距离 */
+    /* 核心修改：高度从 90px 降到 65px，大幅缩小底部空白 */
+    height: 65px; 
     background: #f7f7f7;
     border-top: 1px solid #ddd;
     display: flex;
-    align-items: flex-start; /* 顶部对齐 */
-    padding: 10px 15px;      /* 左右留出呼吸感 */
+    align-items: center; /* 垂直居中所有零件 */
+    padding: 0 15px;      /* 左右留出呼吸感 */
     z-index: 1000;
 }
 
-/* 内部三个盒子的精准分配 */
+/* 2. 内部盒子的对齐微调 */
 .left-box {
-    width: 40px; 
-    height: 40px;
+    width: 35px; 
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -55,48 +55,42 @@ body { margin: 0; background: #ededed; font-family: -apple-system, sans-serif; }
 }
 
 .middle-box {
-    flex: 1; /* 撑开中间 */
-    height: 40px;
-    display: flex;
-    align-items: center;
+    flex: 1; 
+    margin: 0 8px; /* 给输入框左右留点空隙 */
+}
+
+#user-input {
+    width: 100%;
+    height: 36px; /* 稍微矮一点点更精致 */
+    background: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 16px;
+    outline: none;
 }
 
 .right-box {
-    width: 65px; /* 给按钮留出足够的空间，不让它往右飞 */
-    height: 40px;
+    width: 55px; 
     display: flex;
     justify-content: flex-end;
     align-items: center;
     flex-shrink: 0;
 }
 
-/* 输入框本体 */
-#user-input {
-    width: 100%;
-    height: 38px;
-    background: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 16px;
-    outline: none;
-}
-
-/* 发送按钮本体 */
 #send-btn {
-    width: 56px;
-    height: 34px;
+    width: 52px;
+    height: 32px;
     background: #07c160;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     font-weight: bold;
     font-size: 14px;
-    cursor: pointer;
 }
 
-/* 聊天背景色也要统一，防止穿帮 */
+/* 3. 聊天内容区的留白同步缩小 */
 .chat-container {
     background: #ededed !important;
-    padding-bottom: 100px !important;
+    padding-bottom: 75px !important; /* 跟随输入框高度变化 */
 }
