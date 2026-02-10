@@ -1,35 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>微信</title>
-  <link rel="stylesheet" href="./wechat.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>微信聊天</title>
+    <link rel="stylesheet" href="./wechat-style.css">
 </head>
+<body>
+    <div class="wechat-screen">
+        <div class="nav-bar">
+            <div class="back-btn" onclick="location.href='./index.html'">〈 微信</div>
+            <div class="chat-name">4o 酱</div>
+            <div class="more-icon">···</div>
+        </div>
 
-<body class="wx">
-  <header class="wx-topbar">
-    <button class="wx-nav wx-back" onclick="location.href='./index.html'"></button>
+        <div class="chat-container" id="chat-box">
+            <div class="msg-time">15:41</div>
+            <div class="msg left">
+                <div class="avatar"><img src="./avatar-ai.png" alt=""></div>
+                <div class="bubble">哈喽！找我有什么事吗？🩷</div>
+            </div>
+        </div>
 
-    <div class="wx-top-mid">
-      <div class="wx-name" id="wxName">眠眠</div>
-      <div class="wx-sub" id="wxRemark">个性签名：在呢</div>
+        <div class="input-bar">
+            <div class="icon-btn">➕</div>
+            <input type="text" id="user-input" placeholder="发送消息...">
+            <button id="send-btn" onclick="sendMessage()">发送</button>
+        </div>
     </div>
-
-    <button class="wx-nav" onclick="location.href='./wechat-details.html'">⋯</button>
-  </header>
-
-  <main class="wx-chat" id="chat"></main>
-
-  <footer class="wx-inputbar">
-    <button class="wx-icon" id="btnPlus">＋</button>
-    <input class="wx-input" id="textInput" placeholder="说点什么…" />
-    <button class="wx-send" id="btnSend">发送</button>
-    <input id="imgPicker" type="file" accept="image/*" hidden />
-  </footer>
-
-  
-
-  <script src="./wechat.js"></script>
+    <script src="./wechat-app.js"></script>
 </body>
 </html>
