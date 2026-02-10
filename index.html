@@ -1,68 +1,90 @@
-<div class="grid">
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>我的小手机</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  
+  <div class="phone-container">
+    <div class="screen">
+      
+      <div class="top-card">
+        <div class="card-header">
+          <span class="name">猫猫</span>
+        </div>
+        <div class="mood-box" id="mood">
+          今天心情：<span class="heart-icon">🩷</span>
+        </div>
+      </div>
+
+      <div class="grid">
         <a class="app" href="./wechat.html">
           <div class="icon-wrapper">
-             <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/WeChat_logo.svg" alt="微信">
-          </div>
-          <div class="label">微信</div>
+             <img src="./wechat.png" alt=""> </div>
         </a>
 
-        <button class="app" id="btn-mood">
+        <button class="app">
           <div class="icon-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Apple_Health_icon.svg" alt="状态">
+            <img src="./health.png" alt="">
           </div>
-          <div class="label">状态</div>
         </button>
 
         <button class="app">
           <div class="icon-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg" alt="一起听歌">
+            <img src="./music.png" alt="">
           </div>
-          <div class="label">一起听歌</div>
         </button>
 
         <button class="app">
           <div class="icon-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Apple_Books_icon.svg" alt="一起看书">
+            <img src="./books.png" alt="">
           </div>
-          <div class="label">一起看书</div>
-        </a>
+        </button>
 
         <button class="app">
           <div class="icon-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Apple_Home_icon.svg" alt="家园">
+            <img src="./home.png" alt="">
           </div>
-          <div class="label">家园</div>
-        </a>
+        </button>
 
         <button class="app">
           <div class="icon-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Apple_Reminders_icon.svg" alt="提醒">
+            <img src="./reminders.png" alt="">
           </div>
-          <div class="label">提醒</div>
-        </a>
+        </button>
       </div>
 
       <div class="dock">
         <div class="dock-content">
           <div class="dock-item">
             <div class="icon-wrapper dock-icon-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/WeChat_logo.svg">
+                <img src="./wechat.png">
             </div>
           </div>
           <div class="dock-item">
             <div class="icon-wrapper dock-icon-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Apple_Phone_icon.svg">
+                <img src="./phone.png">
             </div>
           </div>
           <div class="dock-item">
             <div class="icon-wrapper dock-icon-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Apple_Camera_icon.svg">
+                <img src="./camera.png">
             </div>
           </div>
           <div class="dock-item">
             <div class="icon-wrapper dock-icon-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Apple_Settings_icon.svg">
+                <img src="./settings.png">
             </div>
           </div>
         </div>
       </div>
+
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
