@@ -1,294 +1,134 @@
-*{box-sizing:border-box;font-family: -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial;}
-body{margin:0;background:#f6f6f8;}
-.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
-.phone{
-  width: 390px; max-width: 92vw;
-  height: 780px; max-height: 92vh;
-  border-radius: 36px;
-  background: #111;
-  padding: 14px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.22);
-}
-.statusbar{
-  height: 44px;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 12px;
-  font-weight:600;
-  font-size:14px;
-}
-.statusbar .back{color:#fff;text-decoration:none;font-size:18px;}
-.statusbar .title{flex:1;text-align:center;margin-right:30px;}
-.status-right{opacity:.9;display:flex;gap:10px;align-items:center;}
-.screen{
-  height: calc(100% - 44px);
-  border-radius: 26px;
-  background: linear-gradient(180deg,#ffe6f1 0%, #ffffff 55%, #f2f6ff 100%);
-  padding: 14px;
-  position:relative;
-  overflow:hidden;
-}
-.top-card{
-  background: rgba(255,255,255,.7);
-  border: 1px solid rgba(0,0,0,.06);
-  border-radius: 16px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-}
-.top-card .name{font-size:18px;font-weight:800;}
-.top-card .mood{margin-top:6px;font-size:14px;opacity:.8}
-
-.grid{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  padding-top: 8px;
-}
-.app{
-  border:0;background:transparent;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  text-decoration:none;color:#111;
-}
-.icon{
-  width:60px;height:60px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  background: rgba(255,255,255,.75);
-  border: 1px solid rgba(0,0,0,.06);
-  font-size:26px;
-}
-.label{font-size:12px;opacity:.85}
-
-.icon.wechat{background:#22c55e;position:relative;border:0}
-.icon.wechat .b1,.icon.wechat .b2{position:absolute;display:block;background:#fff;border-radius:999px}
-.icon.wechat .b1{width:30px;height:22px;left:12px;top:16px}
-.icon.wechat .b2{width:24px;height:18px;left:24px;top:26px;opacity:.92}
-.icon.wechat .b1::after,.icon.wechat .b2::after{
-  content:"";position:absolute;left:7px;top:8px;width:4px;height:4px;background:#22c55e;border-radius:50%;
-  box-shadow: 10px 0 0 #22c55e;
-}
-.icon.moodicon{background:#ff76b3;color:#fff;border:0}
-
-.dock{
-  position:absolute;left:14px;right:14px;bottom:14px;
-  height: 64px;
-  background: rgba(255,255,255,.75);
-  border: 1px solid rgba(0,0,0,.06);
-  border-radius: 20px;
-  display:flex;align-items:center;justify-content:space-around;
-  padding: 10px;
-}
-.dock-btn{
-  border:0;background:rgba(0,0,0,.06);
-  padding:10px 12px;border-radius:14px;
-  font-weight:700;
-}
-.dock-btn, .dock-btn:visited{color:#111;text-decoration:none}
-
-/* chat */
-.screen.chat{display:flex;flex-direction:column;gap:10px;padding-bottom:80px;}
-.msg{
-  max-width: 78%;
-  padding:10px 12px;border-radius:14px;
-  background: rgba(255,255,255,.85);
-  border: 1px solid rgba(0,0,0,.06);
-  line-height:1.35;
-}
-.msg.me{align-self:flex-end;background:#ffebf4}
-.msg.other{align-self:flex-start}
-
-.composer{
-  position:absolute;left:14px;right:14px;bottom:14px;
-  display:flex;gap:10px;
-}
-.composer input{
-  flex:1;border-radius:14px;border:1px solid rgba(0,0,0,.12);
-  padding:12px 12px;font-size:14px;
-}
-.composer button{
-  border:0;border-radius:14px;padding:12px 14px;font-weight:800;
-  background:#22c55e;color:#fff;
-}
-.statusbar { 
-  display: none !important; 
-}
-.dock{
-  position: fixed !important;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 16px;
-  z-index: 9999;
-}
-html, body{
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+/* 1. 全局初始化 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.screen{
-  width: 100% !important;
-  min-height: 100vh;
-  box-sizing: border-box;
-  padding-bottom: 90px; /* 给 dock 留位置，避免挡住内容 */
-}
-/* ===== WeChat page ===== */
-.wx-page{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:#f5f5f5;
-  font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+body {
+    background: linear-gradient(180deg, #fff0f3 0%, #ffffff 100%);
+    font-family: -apple-system, "SF Pro Text", "PingFang SC", sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.wx-topbar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  background:#f7f7f7;
-  border-bottom:1px solid rgba(0,0,0,.06);
+/* 2. 模拟手机容器（让它在iPad中间显示，别铺满） */
+.phone-container {
+    width: 100%;
+    max-width: 400px; /* 限制宽度，防止图标变巨大 */
+    height: 100vh;
+    position: relative;
+    padding: 0 20px;
 }
 
-.wx-back, .wx-more{
-  border:none;
-  background:transparent;
-  font-size:20px;
-  padding:6px 8px;
+/* 3. 状态栏 */
+.statusbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 10px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.wx-title{ flex:1; min-width:0; }
-.wx-remark{ font-weight:700; font-size:16px; line-height:1.2; }
-.wx-sign{ font-size:12px; color:rgba(0,0,0,.55); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-.wx-chat{
-  flex:1;
-  padding:12px;
-  overflow:auto;
-  background-size:cover;
-  background-position:center;
+/* 4. 顶部卡片 - 增加博主风的圆润感 */
+.top-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
-/* 三种背景 */
-.wx-chat.bg-pink{ background: linear-gradient(180deg,#ffe6f1,#fff); }
-.wx-chat.bg-wechat{ background: #e9f6ef; }
-.wx-chat.bg-night{ background: linear-gradient(180deg,#121212,#1f1f1f); }
+.name { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+.mood-box { color: #888; font-size: 14px; }
 
-.msg-row{
-  display:flex;
-  gap:8px;
-  margin:10px 0;
-  align-items:flex-end;
-}
-
-.msg-row.right{ justify-content:flex-end; }
-.msg-row.right .avatar{ order:2; }
-.msg-row.right .bubble{ order:1; }
-
-.avatar{
-  width:36px;
-  height:36px;
-  border-radius:8px;
-  background:#ddd;
-  object-fit:cover;
+/* 5. 图标网格 - 核心修容区 */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 严格4列 */
+    gap: 20px 15px;
+    justify-items: center;
 }
 
-.bubble{
-  max-width:72%;
-  padding:10px 12px;
-  border-radius:12px;
-  font-size:15px;
-  line-height:1.35;
-  word-break:break-word;
-  position:relative;
+.app {
+    text-decoration: none;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-.bubble.white{
-  background:#fff;
-  border:1px solid rgba(0,0,0,.06);
+/* 强制锁定图标大小！解决那个大微信的问题 */
+.icon-wrapper {
+    width: 60px; 
+    height: 60px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden; /* 剪掉超出部分 */
+    margin-bottom: 8px;
+    font-size: 30px; /* 针对Emoji的大小 */
 }
 
-.bubble.green{
-  background:#95ec69; /* 微信绿气泡 */
-  border:1px solid rgba(0,0,0,.06);
+.icon-wrapper img {
+    width: 100% !important; /* 强制图片撑满格子 */
+    height: 100% !important;
+    object-fit: cover; /* 裁剪成正方形 */
 }
 
-.wx-bottom{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  background:#f7f7f7;
-  border-top:1px solid rgba(0,0,0,.06);
+.label {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    white-space: nowrap;
 }
 
-.wx-status{
-  border:none;
-  background:#fff;
-  border-radius:12px;
-  padding:10px 12px;
-  font-size:14px;
+/* 6. 底部 Dock 栏 - 变成悬浮长条 */
+.dock {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 35px;
+    padding: 10px 5px;
+    border: 1px solid rgba(255,255,255,0.3);
 }
 
-.wx-input{
-  flex:1;
-  border:none;
-  border-radius:12px;
-  padding:10px 12px;
-  background:#fff;
-  font-size:15px;
-  outline:none;
+.dock-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
-.wx-send{
-  border:none;
-  border-radius:12px;
-  padding:10px 14px;
-  background:#07c160;
-  color:#fff;
-  font-weight:700;
+.dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
 }
 
-/* modal */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  background:rgba(0,0,0,.35);
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  z-index: 9999;
+.dock-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
 }
-.modal.show{ display:flex; }
 
-.modal-card{
-  width:min(420px, 100%);
-  background:#fff;
-  border-radius:16px;
-  padding:14px;
-}
-.modal-title{ font-weight:700; margin:10px 0 8px; }
-.moods{ display:flex; flex-wrap:wrap; gap:10px; }
-.mood{
-  border:none;
-  background:#f2f2f2;
-  padding:10px 12px;
-  border-radius:12px;
-  font-size:16px;
-}
-.modal-close{
-  width:100%;
-  margin-top:12px;
-  border:none;
-  background:#111;
-  color:#fff;
-  padding:12px;
-  border-radius:12px;
-}
-.mood-badge{
-  display:inline-block;
-  margin-left:6px;
-  font-size:14px;
-  opacity:.85;
+.dock-label {
+    font-size: 10px;
+    opacity: 0.7;
 }
