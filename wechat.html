@@ -24,8 +24,13 @@
 
         <div class="input-bar">
     <input type="file" id="image-input" accept="image/*" style="display:none">
-    <div class="icon-btn" onclick="document.getElementById('image-input').click()">🖼️</div>
-    <input type="text" id="user-input" placeholder="发送消息...">
+    
+    <div class="icon-btn" onclick="document.getElementById('image-input').click()">
+        <img src="https://img.icons8.com/material-outlined/24/000000/image.png" width="24" height="24">
+    </div>
+    
+    <input type="text" id="user-input" placeholder="发送消息..." onkeydown="if(event.key==='Enter') sendMessage()">
+    
     <button id="send-btn" onclick="sendMessage()">发送</button>
         </div>
     </div>
