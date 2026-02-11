@@ -3,114 +3,180 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>搜索聊天内容</title>
+  <title>聊天详情</title>
   <style>
-    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; }
+    /* 核心：1:1 还原微信那种清爽感 */
+    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
     
-    /* 顶部搜索栏 */
-    .search-header {
-      background: #ededed; padding: 10px 15px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .search-box-wrapper {
-      flex: 1; background: #fff; height: 36px; border-radius: 6px;
-      display: flex; align-items: center; padding: 0 10px;
-    }
-    .search-icon { color: #b2b2b2; font-size: 14px; margin-right: 8px; }
-    .search-input {
-      border: none; outline: none; width: 100%; font-size: 16px;
-    }
-    .cancel-btn { color: #576b95; font-size: 16px; text-decoration: none; white-space: nowrap; }
+    /* 顶部：44px 高度，细边框 */
+    .nav { height: 44px; background: #f1f1f1; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; }
+    .back { width: 12px; height: 12px; border-left: 2.5px solid #000; border-bottom: 2.5px solid #000; transform: rotate(45deg); cursor: pointer; }
+    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 12px; }
 
-    /* 快速搜索分类 */
-    .quick-search-container {
-      display: flex; flex-direction: column; align-items: center;
-      padding-top: 60px;
-    }
-    .quick-title { color: #b2b2b2; font-size: 14px; margin-bottom: 30px; }
-    
-    .grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      width: 90%; text-align: center; gap: 30px 0;
-    }
-    .grid-item {
-      color: #576b95; font-size: 16px; text-decoration: none;
-      border-right: 0.5px solid #d8d8d8;
-    }
-    .grid-item:nth-child(3n) { border-right: none; }
+    /* 白底区域：微信标志性的间距 */
+    .section { background: #fff; margin-bottom: 8px; }
+    .member-box { padding: 18px 16px; display: flex; gap: 22px; }
+    .member { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #f3f3f3; object-fit: cover; }
+    .m-name { font-size: 12px; color: #888; }
+    .add-btn { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b1b1b1; font-size: 30px; font-weight: 200; }
 
-    /* 搜索结果区域 */
-    #results {
-      background: #fff; margin-top: 10px; display: none;
+    /* 列表项：56px 高度，左侧空出 16px 的细线 */
+    .item { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; position: relative; }
+    .item::after { content: ""; position: absolute; bottom: 0; left: 16px; right: 0; height: 0.5px; background: #e5e5e5; }
+    .item:last-child::after { display: none; }
+
+    .info { color: #888; font-size: 16px; display: flex; align-items: center; }
+    .arrow { width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); margin-left: 8px; }
+
+    /* 彻底锁定微信绿色开关样式 */
+    .switch { 
+      appearance: none; -webkit-appearance: none; 
+      width: 50px; height: 30px; background: #e9e9ea; 
+      border-radius: 15px; position: relative; transition: 0.3s; outline: none; border: none; cursor: pointer;
     }
-    .res-item {
-      padding: 12px 15px; border-bottom: 0.5px solid #e5e5e5;
-      display: flex; flex-direction: column; gap: 4px;
+    .switch:checked { background: #07C160; }
+    .switch::after { 
+      content: ""; position: absolute; width: 26px; height: 26px; background: #fff; 
+      border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
     }
-    .res-meta { font-size: 12px; color: #b2b2b2; }
-    .res-text { font-size: 15px; color: #000; }
+    .switch:checked::after { left: 22px; }
+
+    .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
+    .danger { color: #fa5151; justify-content: center; font-weight: 500; border: none; background: #fff; width: 100%; height: 56px; font-size: 17px; cursor: pointer; display: flex; align-items: center; }
   </style>
 </head>
 <body>
 
-  <div class="search-header">
-    <div class="search-box-wrapper">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" placeholder="搜索" id="keyword" oninput="doSearch()">
+<div class="nav">
+  <div class="back" onclick="history.back()"></div>
+  <div class="nav-title">聊天详情</div>
+</div>
+
+<div class="section">
+  <div class="member-box">
+    <div class="member" onclick="document.getElementById('f1').click()">
+      <img src="" id="ui-av" class="avatar" style="display:none">
+      <div id="ui-empty" class="avatar" style="background:#ddd"></div>
+      <span class="m-name" id="ui-nick">4o 酱</span>
+      <input type="file" id="f1" hidden accept="image/*">
     </div>
-    <a href="wechat-detail.html" class="cancel-btn">取消</a>
+    <div class="add-btn">+</div>
   </div>
+</div>
 
-  <div id="quick-panel" class="quick-search-container">
-    <div class="quick-title">快速搜索聊天内容</div>
-    <div class="grid">
-      <div class="grid-item" onclick="filterBy('date')">日期</div>
-      <div class="grid-item" onclick="filterBy('image')">图片与视频</div>
-      <div class="grid-item" onclick="alert('暂无相关链接')">链接</div>
-    </div>
+<div class="section">
+  <div class="item" onclick="editN()">
+    <span>备注名称</span>
+    <div class="info"><span id="val-n">4o 酱</span><div class="arrow"></div></div>
   </div>
+</div>
 
-  <div id="results"></div>
+<div class="section">
+  <div class="item" onclick="location.href='wechat-search.html'">
+    <span>查找聊天内容</span>
+    <div class="arrow"></div>
+  </div>
+  <div class="item">
+    <span>消息免打扰</span>
+    <input type="checkbox" class="switch" id="mute-st" onchange="localStorage.setItem('chat-mute', this.checked)">
+  </div>
+  <div class="item">
+    <span>置顶聊天</span>
+    <input type="checkbox" class="switch" id="ui-st" onchange="localStorage.setItem('chat-sticky', this.checked)">
+  </div>
+</div>
 
-  <script>
-    const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
+<div class="label">记忆与备份</div>
+<div class="section">
+  <div class="item" onclick="doSync()">
+    <span>同步到记忆库</span>
+    <div class="info" style="color:#07C160">立即同步</div>
+  </div>
+  <div class="item" onclick="doExport()">
+    <span>导出聊天记录 (.txt)</span>
+    <div class="arrow"></div>
+  </div>
+</div>
 
-    function doSearch() {
-      const q = document.getElementById('keyword').value.trim();
-      const panel = document.getElementById('quick-panel');
-      const resBox = document.getElementById('results');
+<button class="danger" onclick="doClear()">清空聊天记录</button>
 
-      if (!q) {
-        panel.style.display = 'flex';
-        resBox.style.display = 'none';
-        return;
-      }
+<script>
+  window.onload = function() {
+    const n = localStorage.getItem('ai-nickname') || '4o 酱';
+    const a = localStorage.getItem('ai-avatar');
+    const s = localStorage.getItem('chat-sticky') === 'true';
+    const m = localStorage.getItem('chat-mute') === 'true';
 
-      panel.style.display = 'none';
-      resBox.style.display = 'block';
-
-      const matched = history.filter(item => item.content && item.content.includes(q));
-      
-      if (matched.length > 0) {
-        resBox.innerHTML = matched.map(m => `
-          <div class="res-item">
-            <div class="res-meta">${m.role === 'user' ? '我' : '4o酱'}</div>
-            <div class="res-text">${m.content.replace(q, `<span style="color:#07C160">${q}</span>`)}</div>
-          </div>
-        `).join('');
-      } else {
-        resBox.innerHTML = '<div style="padding:40px; text-align:center; color:#b2b2b2;">无搜索结果</div>';
-      }
+    document.getElementById('ui-nick').innerText = n;
+    document.getElementById('val-n').innerText = n;
+    document.getElementById('ui-st').checked = s;
+    document.getElementById('mute-st').checked = m;
+    
+    if(a) {
+      document.getElementById('ui-av').src = a;
+      document.getElementById('ui-av').style.display = 'block';
+      document.getElementById('ui-empty').style.display = 'none';
     }
+  };
 
-    function filterBy(type) {
-      if(type === 'image') {
-        const imgs = history.filter(item => item.content && item.content.includes('data:image'));
-        alert(`共发现 ${imgs.length} 张聊天图片`);
-      } else {
-        alert("正在按日期整理记忆...");
-      }
+  // 1. 真·同步记忆库
+  function doSync() {
+    const history = localStorage.getItem('chat_history');
+    if (!history || history === '[]') {
+      alert("⚠️ 目前没有聊天记录可以同步。");
+      return;
     }
-  </script>
+    let memories = JSON.parse(localStorage.getItem('saved_memories') || '[]');
+    memories.unshift({
+      time: new Date().toLocaleString(),
+      data: history
+    });
+    localStorage.setItem('saved_memories', JSON.stringify(memories));
+    alert("✅ 同步成功！数据已存入记忆仓库。");
+  }
+
+  // 2. 真·导出聊天记录
+  function doExport() {
+    const historyData = localStorage.getItem('chat_history');
+    if (!historyData || historyData === '[]') {
+      alert("⚠️ 聊天记录为空，无法导出。");
+      return;
+    }
+    const history = JSON.parse(historyData);
+    let text = "--- 微信聊天记录导出 ---\n\n";
+    history.forEach(item => {
+      const roleName = item.role === 'user' ? '我' : (localStorage.getItem('ai-nickname') || 'AI');
+      text += `[${roleName}]: ${item.content}\n`;
+    });
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ChatHistory_${new Date().getTime()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function editN() {
+    const res = prompt("设置备注");
+    if(res) { localStorage.setItem('ai-nickname', res); location.reload(); }
+  }
+
+  document.getElementById('f1').onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = (ev) => { localStorage.setItem('ai-avatar', ev.target.result); location.reload(); };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  function doClear() {
+    if(confirm("确定要删除所有聊天记录吗？此操作不可撤销！")) {
+      localStorage.removeItem('chat_history');
+      alert("记录已清空");
+      location.reload();
+    }
+  }
+</script>
 </body>
 </html>
