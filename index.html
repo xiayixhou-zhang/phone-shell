@@ -2,9 +2,61 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>我的小手机</title>
   <link rel="stylesheet" href="./styles.css" />
+  <style>
+    /* 在这里补充一些关键的 Ins 风样式，确保即使 styles.css 没更新也能看 */
+    :root { --ios-radius: 20px; }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 1000;
+      align-items: flex-end; /* 从底部弹出 */
+    }
+
+    .modal-content {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 30px 30px 0 0;
+      padding: 20px;
+      padding-bottom: env(safe-area-inset-bottom); /* 适配苹果底部横条 */
+      box-sizing: border-box;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-out;
+    }
+
+    .modal.active { display: flex; }
+    .modal.active .modal-content { transform: translateY(0); }
+
+    .s-item {
+      background: rgba(255,255,255,0.6);
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    /* 修复掉图后的占位样式 */
+    .icon-wrapper img[src=""], .icon-wrapper img:not([src]) {
+      opacity: 0;
+    }
+    .icon-wrapper {
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
   
@@ -17,9 +69,8 @@
       </div>
 
       <div class="grid">
-        
         <div class="widget-weather" onclick="openSettings()">
-          <img src="" id="weather-img" alt="weather">
+          <img src="./weather-icon.png" id="weather-img" alt="weather" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3222/3222800.png'">
           <div class="widget-info">
             <div class="location">青秀区 🔍</div>
             <div class="temp">14°</div>
@@ -28,15 +79,34 @@
         </div>
 
         <a class="app" href="wechat.html">
-          <div class="icon-wrapper"><img src="./wechat.png" alt="wechat"></div>
+          <div class="icon-wrapper"><img src="./wechat.png" id="img-wechat" alt="wechat"></div>
           <div class="app-label">微信</div>
         </a>
 
-        <div class="app"><div class="icon-wrapper"><img src="./health.png" alt="health"></div><div class="app-label">状态</div></div>
-        <div class="app"><div class="icon-wrapper"><img src="./music.png" alt="music"></div><div class="app-label">一起听歌</div></div>
-        <div class="app"><div class="icon-wrapper"><img src="./books.png" alt="books"></div><div class="app-label">一起看书</div></div>
-        <div class="app"><div class="icon-wrapper"><img src="./home.png" alt="home"></div><div class="app-label">家园</div></div>
-        <div class="app"><div class="icon-wrapper"><img src="./reminders.png" alt="reminders"></div><div class="app-label">提醒</div></div>
+        <div class="app">
+          <div class="icon-wrapper"><img src="./health.png" id="img-health" alt="health"></div>
+          <div class="app-label">状态</div>
+        </div>
+
+        <div class="app">
+          <div class="icon-wrapper"><img src="./music.png" id="img-music" alt="music"></div>
+          <div class="app-label">一起听歌</div>
+        </div>
+
+        <div class="app">
+          <div class="icon-wrapper"><img src="./books.png" id="img-books" alt="books"></div>
+          <div class="app-label">一起看书</div>
+        </div>
+
+        <div class="app">
+          <div class="icon-wrapper"><img src="./home.png" id="img-home" alt="home"></div>
+          <div class="app-label">家园</div>
+        </div>
+
+        <div class="app">
+          <div class="icon-wrapper"><img src="./reminders.png" id="img-reminders" alt="reminders"></div>
+          <div class="app-label">提醒</div>
+        </div>
       </div>
 
       <div class="dock">
@@ -44,35 +114,106 @@
           <a class="dock-item" href="wechat.html">
             <div class="icon-wrapper"><img src="./wechat.png" alt="wechat"></div>
           </a>
-          <div class="dock-item"><div class="icon-wrapper"><img src="./phone.png" alt="phone"></div></div>
-          <div class="dock-item"><div class="icon-wrapper"><img src="./camera.png" alt="camera"></div></div>
+          <div class="dock-item">
+            <div class="icon-wrapper"><img src="./phone.png" alt="phone"></div>
+          </div>
+          <div class="dock-item">
+            <div class="icon-wrapper"><img src="./camera.png" alt="camera"></div>
+          </div>
           <div class="dock-item" onclick="openSettings()">
             <div class="icon-wrapper"><img src="./settings.png" alt="settings"></div>
           </div>
         </div>
       </div>
 
-    </div> </div> <div id="settings-modal" class="modal">
+    </div> 
+  </div>
+
+  <div id="settings-modal" class="modal" onclick="if(event.target==this) closeSettings()">
     <div class="modal-content">
-      <h4>个性化设置</h4>
-      <div class="s-item">更换背景：<input type="file" id="bg-upload"></div>
-      <div class="s-item">更换组件：<input type="file" id="widget-upload"></div>
+      <div style="width:40px; height:5px; background:#ddd; border-radius:10px; margin: 0 auto 15px;"></div>
+      <h4 style="margin:0 0 15px 5px;">个性化设置</h4>
+      
       <div class="s-item">
-        更换图标：
-        <select id="app-selector">
-          <option value="wechat">微信</option>
-          <option value="health">状态</option>
-          <option value="music">听歌</option>
-          <option value="books">看书</option>
-          <option value="home">家园</option>
-          <option value="reminders">提醒</option>
-        </select>
-        <input type="file" id="icon-upload">
+        <span>API Key (GPT)</span>
+        <input type="password" id="api-key" placeholder="未设置" style="border:none; background:none; text-align:right; width:50%;">
       </div>
-      <button class="close-btn" onclick="closeSettings()">完成</button>
+
+      <div class="s-item">
+        <span>更换背景</span>
+        <input type="file" id="bg-upload" accept="image/*">
+      </div>
+
+      <div class="s-item">
+        <span>更换图标</span>
+        <div style="display:flex; align-items:center;">
+          <select id="app-selector" style="margin-right:5px; border-radius:5px; border:1px solid #ddd;">
+            <option value="wechat">微信</option>
+            <option value="health">状态</option>
+            <option value="music">听歌</option>
+            <option value="books">看书</option>
+            <option value="home">家园</option>
+            <option value="reminders">提醒</option>
+          </select>
+          <input type="file" id="icon-upload" accept="image/*" style="width:80px;">
+        </div>
+      </div>
+
+      <button class="close-btn" onclick="saveAndClose()" style="width:100%; margin-top:20px; padding:12px; border-radius:15px; border:none; background:#007AFF; color:white; font-weight:bold;">完成</button>
     </div>
   </div>
 
-  <script src="./app.js"></script>
+  <script>
+    // 基础交互逻辑
+    function openSettings() {
+      document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.remove('active');
+    }
+
+    // 核心功能：图片转 Base64 存储，防止桌面版掉图
+    async function handleFileUpload(file, storageKey, elementId) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64String = e.target.result;
+        localStorage.setItem(storageKey, base64String); // 存入手机本地
+        if(elementId) document.getElementById(elementId).src = base64String;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveAndClose() {
+      const appType = document.getElementById('app-selector').value;
+      const iconFile = document.getElementById('icon-upload').files[0];
+      const bgFile = document.getElementById('bg-upload').files[0];
+
+      if(iconFile) handleFileUpload(iconFile, 'icon-' + appType, 'img-' + appType);
+      if(bgFile) handleFileUpload(bgFile, 'phone-bg', null);
+      
+      // 保存 API Key
+      const apiKey = document.getElementById('api-key').value;
+      if(apiKey) localStorage.setItem('gpt-api-key', apiKey);
+
+      closeSettings();
+    }
+
+    // 页面加载时自动恢复存好的图片
+    window.onload = function() {
+      const apps = ['wechat', 'health', 'music', 'books', 'home', 'reminders'];
+      apps.forEach(app => {
+        const savedIcon = localStorage.getItem('icon-' + app);
+        if(savedIcon) {
+          const img = document.getElementById('img-' + app);
+          if(img) img.src = savedIcon;
+        }
+      });
+      // 恢复背景
+      const savedBg = localStorage.getItem('phone-bg');
+      if(savedBg) document.querySelector('.screen').style.backgroundImage = `url(${savedBg})`;
+    };
+  </script>
 </body>
 </html>
