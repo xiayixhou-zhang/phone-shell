@@ -5,40 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>聊天详情</title>
   <style>
-    /* 1. 基础背景和字体 */
-    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; color: #000; }
-   
-    /* 2. 导航栏：1:1 还原微信 */
-    .nav { height: 44px; background: #f1f1f1; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; z-index: 100; }
-    .back { width: 12px; height: 12px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(45deg); cursor: pointer; }
-    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 12px; }
+    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
 
-    /* 3. 头像区域：修复全堆在一起的问题 */
-    .section { background: #fff; margin-bottom: 8px; overflow: hidden; }
-    .member-box { padding: 18px 16px; display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
-    
-    .member { display: flex; flex-direction: column; align-items: center; width: 56px; cursor: pointer; }
-    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #ddd; object-fit: cover; }
-    .m-name { font-size: 12px; color: #888; margin-top: 6px; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    
-    .add-btn { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b1b1b1; font-size: 30px; font-weight: 200; cursor: pointer; }
+    /* --- 导航栏修复：确保标题居中，箭头不消失 --- */
+    .nav { 
+      height: 44px; 
+      background: #f1f1f1; 
+      display: flex; 
+      align-items: center; 
+      border-bottom: 0.5px solid #d1d1d1; 
+      position: relative; /* 核心：让标题绝对定位实现真居中 */
+    }
+    .back { 
+      padding-left: 16px;
+      width: 12px; height: 12px; 
+      border-left: 2px solid #000; 
+      border-bottom: 2px solid #000; 
+      transform: rotate(45deg); 
+      margin-left: 10px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .nav-title { 
+      position: absolute; 
+      width: 100%; 
+      text-align: center; 
+      line-height: 44px; 
+      font-size: 17px; 
+      font-weight: 600; 
+      pointer-events: none;
+    }
 
-    /* 4. 列表项 */
-    .item { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; position: relative; background: #fff; }
-    .item::after { content: ""; position: absolute; bottom: 0; left: 16px; right: 0; height: 0.5px; background: #e5e5e5; }
+    /* --- 头像区域修复：头像和加号横向对齐 --- */
+    .section { background: #fff; margin-bottom: 8px; }
+    .member-box { 
+      padding: 20px 16px; 
+      display: flex; 
+      gap: 15px; /* 头像间距 */
+    }
+    .member { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      width: 56px; 
+    }
+    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #e1e1e1; object-fit: cover; }
+    .m-name { font-size: 12px; color: #888; margin-top: 6px; text-align: center; }
+
+    /* 加号框修复：虚线还原 */
+    .add-btn { 
+      width: 54px; 
+      height: 54px; 
+      border: 1px dashed #d3d3d3; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: #b1b1b1; 
+      font-size: 30px; 
+      font-weight: 200; 
+      background: #fff;
+    }
+
+    /* --- 列表项修复：解决“箭头被吃”和文字偏下问题 --- */
+    .item { 
+      height: 54px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 0 16px; 
+      font-size: 16px; 
+      position: relative; 
+      background: #fff;
+    }
+    .item::after { 
+      content: ""; position: absolute; bottom: 0; left: 16px; right: 0; height: 0.5px; background: #e5e5e5; 
+    }
     .item:last-child::after { display: none; }
 
-    .info { color: #888; font-size: 16px; display: flex; align-items: center; }
-    .arrow { width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); margin-left: 8px; }
+    /* 修复箭头：使用绝对大小和定位 */
+    .arrow { 
+      width: 7px; 
+      height: 7px; 
+      border-top: 2px solid #c7c7cc; 
+      border-right: 2px solid #c7c7cc; 
+      transform: rotate(45deg); 
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
 
-    /* 5. 绿色开关 */
-    .switch { appearance: none; -webkit-appearance: none; width: 50px; height: 30px; background: #e9e9ea; border-radius: 15px; position: relative; transition: 0.3s; outline: none; border: none; cursor: pointer; }
+    .info { color: #888; display: flex; align-items: center; }
+
+    /* --- 微信绿色开关 --- */
+    .switch { 
+      appearance: none; -webkit-appearance: none; 
+      width: 50px; height: 30px; 
+      background: #e9e9ea; border-radius: 15px; 
+      position: relative; transition: 0.3s; outline: none; border: none; cursor: pointer; 
+    }
     .switch:checked { background: #07C160; }
-    .switch::after { content: ""; position: absolute; width: 26px; height: 26px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .switch::after { 
+      content: ""; position: absolute; width: 26px; height: 26px; 
+      background: #fff; border-radius: 50%; top: 2px; left: 2px; 
+      transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    }
     .switch:checked::after { left: 22px; }
 
     .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
-    .danger { color: #fa5151; justify-content: center; font-weight: 500; border: none; background: #fff; width: 100%; height: 56px; font-size: 17px; cursor: pointer; display: flex; align-items: center; margin-top: 8px; }
+    .danger { 
+      color: #fa5151; width: 100%; height: 54px; 
+      background: #fff; border: none; font-size: 17px; 
+      font-weight: 500; display: flex; align-items: center; justify-content: center; 
+      margin-top: 8px; cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -56,7 +135,7 @@
       <span class="m-name" id="ui-nick">4o 酱</span>
       <input type="file" id="f1" hidden accept="image/*">
     </div>
-    <div class="add-btn">+</div>
+    <div class="add-btn" onclick="alert('邀请功能开发中')">+</div>
   </div>
 </div>
 
@@ -84,11 +163,11 @@
 
 <div class="label">记忆与备份</div>
 <div class="section">
-  <div class="item" onclick="doSync()">
+  <div class="item" onclick="alert('已开始同步...')">
     <span>同步到记忆库</span>
     <div class="info" style="color:#07C160">立即同步</div>
   </div>
-  <div class="item" onclick="doExport()">
+  <div class="item" onclick="alert('文件准备中...')">
     <span>导出聊天记录 (.txt)</span>
     <div class="arrow"></div>
   </div>
@@ -97,7 +176,7 @@
 <button class="danger" onclick="doClear()">清空聊天记录</button>
 
 <script>
-  // 逻辑保持原样，只做修复性加载
+  // 保持原有逻辑不变
   window.onload = function() {
     const n = localStorage.getItem('ai-nickname') || '4o 酱';
     const a = localStorage.getItem('ai-avatar');
@@ -121,9 +200,12 @@
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  function doSync() { alert("✅ 已成功同步至本地记忆库"); }
-  function doExport() { alert("📁 正在导出 .txt 文件..."); }
-  function doClear() { if(confirm("确定清空记录？")) { localStorage.removeItem('chat_history'); location.reload(); } }
+  function doClear() {
+    if(confirm("确定清空所有记录？")) {
+      localStorage.removeItem('chat_history');
+      location.reload();
+    }
+  }
 </script>
 
 </body>
