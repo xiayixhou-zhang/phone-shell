@@ -5,175 +5,183 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>聊天详情</title>
   <style>
-    /* 核心容器：限制最大宽度，防止横向拉伸变形 */
-    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; display: flex; justify-content: center; }
-    .ios-container { width: 100%; max-width: 500px; min-height: 100vh; background: #f1f1f1; }
+    :root { --wx-green: #07C160; --wx-bg: #f1f1f1; --wx-line: #e5e5e5; }
+    body { margin: 0; background: var(--wx-bg); font-family: -apple-system, Helvetica, sans-serif; color: #000; display: flex; justify-content: center; }
+    .app-wrapper { width: 100%; max-width: 500px; min-height: 100vh; }
 
-    /* 顶部导航：高度缩减到 44px */
+    /* 顶部导航栏 - 极致还原 */
     .nav-bar { height: 44px; background: #ededed; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; z-index: 10; }
-    .back-link { font-size: 18px; color: #000; text-decoration: none; width: 40px; }
-    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 40px; }
+    .back-arrow { width: 12px; height: 12px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(45deg); cursor: pointer; }
+    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 12px; }
 
-    /* 成员区域：头像要小而圆润 */
-    .section-white { background: #fff; margin-bottom: 8px; }
-    .member-box { padding: 15px 16px; display: flex; gap: 15px; }
-    .member-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .avatar-circle { width: 52px; height: 52px; border-radius: 6px; background: #f3f3f3; overflow: hidden; }
-    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-    .member-label { font-size: 11px; color: #888; text-align: center; }
-    .add-icon { width: 50px; height: 50px; border: 1px dashed #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #b1b1b1; font-size: 28px; }
+    /* 白底卡片组 */
+    .group { background: #fff; margin-bottom: 8px; }
+    
+    /* 成员区域 */
+    .member-area { padding: 18px 16px; display: flex; gap: 20px; }
+    .member { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #f3f3f3; object-fit: cover; }
+    .m-name { font-size: 12px; color: #888; }
+    .add-btn { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 6px; position: relative; }
+    .add-btn::before, .add-btn::after { content: ""; position: absolute; background: #b1b1b1; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .add-btn::before { width: 20px; height: 1px; } .add-btn::after { width: 1px; height: 20px; }
 
-    /* 列表项：高度固定 54px，文字大小 17px */
-    .list-item { 
-      height: 54px; display: flex; align-items: center; 
+    /* 列表项 */
+    .item { 
+      height: 56px; display: flex; align-items: center; 
       justify-content: space-between; padding: 0 16px; 
-      font-size: 16px; color: #000; position: relative;
+      font-size: 16px; position: relative; 
     }
-    .list-item:not(:last-child)::after { 
+    .item:not(:last-child)::after { 
       content: ""; position: absolute; bottom: 0; left: 16px; right: 0; 
-      height: 0.5px; background: #e5e5e5; 
+      height: 0.5px; background: var(--wx-line); 
     }
 
-    .right-info { display: flex; align-items: center; color: #888; font-size: 15px; }
-    .arrow { color: #c7c7cc; margin-left: 6px; font-family: "serif"; font-weight: bold; }
-
-    /* 开关：严格限制尺寸，不能变大 */
-    .wx-switch { 
-      appearance: none; position: relative; 
-      width: 48px; height: 28px; /* 固定尺寸 */
-      background: #e9e9ea; border-radius: 14px; 
-      transition: 0.3s; cursor: pointer; outline: none;
+    .info { color: #888; font-size: 15px; display: flex; align-items: center; }
+    .chevron { 
+      width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; 
+      border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); 
+      margin-left: 8px; 
     }
-    .wx-switch:checked { background: #07C160; }
-    .wx-switch::before { 
-      content: ""; position: absolute; 
-      width: 24px; height: 24px; background: #fff; 
-      border-radius: 50%; top: 2px; left: 2px; 
-      transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-    }
-    .wx-switch:checked::before { left: 22px; }
 
-    .group-title { padding: 12px 16px 6px; font-size: 13px; color: #888; }
+    /* 微信标准开关 */
+    .switch { 
+      appearance: none; width: 51px; height: 31px; 
+      background: #e9e9ea; border-radius: 15.5px; 
+      position: relative; transition: .3s; outline: none; 
+    }
+    .switch:checked { background: var(--wx-green); }
+    .switch::after { 
+      content: ""; position: absolute; width: 27px; height: 27px; 
+      background: #fff; border-radius: 50%; top: 2px; left: 2px; 
+      transition: .3s; box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
+    }
+    .switch:checked::after { left: 22px; }
+
+    .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
     .danger { color: #fa5151; justify-content: center; font-weight: 500; }
   </style>
 </head>
 <body>
 
-<div class="ios-container">
+<div class="app-wrapper">
   <div class="nav-bar">
-    <a href="wechat.html" class="back-link">〈</a>
-    <span class="nav-title">聊天详情</span>
+    <div class="back-arrow" onclick="history.back()"></div>
+    <div class="nav-title">聊天详情</div>
   </div>
 
-  <div class="section-white" style="margin-top: 0;">
-    <div class="member-box">
-      <div class="member-item" onclick="document.getElementById('avatar-f').click()">
-        <div class="avatar-circle">
-          <img src="./avatar-4o.png" id="avatar-img">
-          <input type="file" id="avatar-f" style="display:none" accept="image/*">
-        </div>
-        <span class="member-label" id="name-label">4o 酱</span>
+  <div class="group">
+    <div class="member-area">
+      <div class="member" onclick="document.getElementById('up-avatar').click()">
+        <img src="" id="ui-avatar" class="avatar" style="display:none">
+        <div id="avatar-placeholder" class="avatar" style="background:#ddd"></div>
+        <span class="m-name" id="ui-name">4o 酱</span>
+        <input type="file" id="up-avatar" hidden accept="image/*">
       </div>
-      <div class="add-icon">+</div>
+      <div class="add-btn"></div>
     </div>
   </div>
 
-  <div class="section-white">
-    <div class="list-item" onclick="changeName()">
+  <div class="group">
+    <div class="item" onclick="editName()">
       <span>备注名称</span>
-      <div class="right-info"><span id="val-name">4o 酱</span><span class="arrow">></span></div>
+      <div class="info"><span id="val-name">4o 酱</span><div class="chevron"></div></div>
     </div>
   </div>
 
-  <div class="list-group section-white">
-    <div class="list-item" onclick="window.location.href='wechat-search.html'">
+  <div class="group">
+    <div class="item" onclick="location.href='wechat-search.html'">
       <span>查找聊天内容</span>
-      <span class="arrow">></span>
+      <div class="chevron"></div>
     </div>
-    <div class="list-item">
+    <div class="item">
       <span>消息免打扰</span>
-      <input type="checkbox" class="wx-switch">
+      <input type="checkbox" class="switch">
     </div>
-    <div class="list-item">
+    <div class="item">
       <span>置顶聊天</span>
-      <input type="checkbox" class="wx-switch" id="top-btn" onchange="localStorage.setItem('chat-sticky', this.checked)">
+      <input type="checkbox" class="switch" id="ui-sticky" onchange="localStorage.setItem('chat-sticky', this.checked)">
     </div>
   </div>
 
-  <div class="group-title">记忆与备份</div>
-  <div class="section-white">
-    <div class="list-item" onclick="sync()">
+  <div class="label">记忆与备份</div>
+  <div class="group">
+    <div class="item" onclick="doSync()">
       <span>同步到记忆库</span>
-      <div class="right-info" style="color:#07C160;">立即同步</div>
+      <div class="info" style="color:var(--wx-green)">立即同步</div>
     </div>
-    <div class="list-item" onclick="dl()">
+    <div class="item" onclick="doExport()">
       <span>导出聊天记录 (.txt)</span>
-      <span class="arrow">></span>
+      <div class="chevron"></div>
     </div>
-    <div class="list-item" onclick="document.getElementById('bg-f').click()">
+    <div class="item" onclick="document.getElementById('up-bg').click()">
       <span>设置聊天背景</span>
-      <span class="arrow">></span>
-      <input type="file" id="bg-f" style="display:none" accept="image/*">
+      <div class="chevron"></div>
+      <input type="file" id="up-bg" hidden accept="image/*">
     </div>
   </div>
 
-  <div class="section-white" style="margin-top: 20px;">
-    <div class="list-item danger" onclick="clearMsg()">清空聊天记录</div>
+  <div class="group" style="margin-top: 20px;">
+    <div class="item danger" onclick="doClear()">清空聊天记录</div>
   </div>
 </div>
 
 <script>
+  // 初始化加载
   window.onload = function() {
     const n = localStorage.getItem('ai-nickname') || '4o 酱';
     const a = localStorage.getItem('ai-avatar');
     const s = localStorage.getItem('chat-sticky') === 'true';
-    document.getElementById('name-label').innerText = n;
+    
+    document.getElementById('ui-name').innerText = n;
     document.getElementById('val-name').innerText = n;
-    document.getElementById('top-btn').checked = s;
-    if(a) document.getElementById('avatar-img').src = a;
+    document.getElementById('ui-sticky').checked = s;
+    if(a) {
+      document.getElementById('ui-avatar').src = a;
+      document.getElementById('ui-avatar').style.display = 'block';
+      document.getElementById('avatar-placeholder').style.display = 'none';
+    }
   };
 
-  function changeName() {
-    const n = prompt("修改备注");
+  function editName() {
+    const n = prompt("设置备注");
     if(n) { localStorage.setItem('ai-nickname', n); location.reload(); }
   }
 
-  document.getElementById('avatar-f').onchange = function(e) {
+  document.getElementById('up-avatar').onchange = function(e) {
+    const f = e.target.files[0];
     const r = new FileReader();
-    r.onload = (ev) => {
-      localStorage.setItem('ai-avatar', ev.target.result);
-      document.getElementById('avatar-img').src = ev.target.result;
-    };
+    r.onload = (ev) => { localStorage.setItem('ai-avatar', ev.target.result); location.reload(); };
+    r.readAsDataURL(f);
+  };
+
+  document.getElementById('up-bg').onchange = function(e) {
+    const r = new FileReader();
+    r.onload = (ev) => { localStorage.setItem('wechat-bg', ev.target.result); alert("背景已更新"); };
     r.readAsDataURL(e.target.files[0]);
   };
 
-  document.getElementById('bg-f').onchange = function(e) {
-    const r = new FileReader();
-    r.onload = (ev) => { localStorage.setItem('wechat-bg', ev.target.result); alert("背景已设置"); };
-    r.readAsDataURL(e.target.files[0]);
-  };
-
-  function sync() {
+  function doSync() {
     const h = localStorage.getItem('chat_history');
-    if(!h || h === '[]') return alert("无记忆");
+    if(!h) return alert("无记忆");
     let m = JSON.parse(localStorage.getItem('saved_memories') || '[]');
     m.unshift({ time: new Date().toLocaleString(), data: h });
     localStorage.setItem('saved_memories', JSON.stringify(m));
-    alert("已存入档案");
+    alert("同步成功");
   }
 
-  function dl() {
+  function doExport() {
     const h = JSON.parse(localStorage.getItem('chat_history') || '[]');
-    const t = h.map(r => `${r.role}: ${r.content}`).join('\n');
-    const b = new Blob([t], {type: 'text/plain'});
+    const text = h.map(i => `${i.role}: ${i.content}`).join('\n');
+    const b = new Blob([text], {type:'text/plain'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(b);
-    a.download = "history.txt";
+    a.download = "chat.txt";
     a.click();
   }
 
-  function clearMsg() {
-    if(confirm("确定清空？")) { localStorage.removeItem('chat_history'); location.reload(); }
+  function doClear() {
+    if(confirm("确定清空记录？")) { localStorage.removeItem('chat_history'); location.reload(); }
   }
 </script>
 </body>
