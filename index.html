@@ -5,142 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>我的小手机</title>
   <style>
-    /* 核心样式：确保 Ins 风与 iOS 布局稳定 */
-    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background: #fff; font-family: -apple-system, sans-serif; }
-    
+    /* 基础重置：消除所有默认边距 */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; font-family: -apple-system, sans-serif; overflow-x: hidden; }
+
+    /* 背景容器 */
     .screen {
       width: 100vw; min-height: 100vh;
-      background: #fdfdfd; display: flex; flex-direction: column; align-items: center;
-      padding-bottom: 120px; /* 为 Dock 留出空间 */
+      display: flex; flex-direction: column; align-items: center;
+      padding-bottom: 120px; 
     }
 
-    /* 顶部猫猫卡片 */
+    /* 顶部卡片：绝对居中 */
     .top-card {
-      width: 85%; margin-top: 50px; padding: 20px;
-      background: rgba(245, 245, 250, 0.6); border-radius: 25px;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      width: 90%; margin: 50px auto 20px; padding: 20px;
+      background: rgba(245, 245, 250, 0.8); border-radius: 28px;
+      text-align: left; backdrop-filter: blur(10px);
     }
-    .name { font-size: 24px; font-weight: bold; }
-    .mood-box { font-size: 14px; background: white; display: inline-block; padding: 6px 12px; border-radius: 15px; margin-top: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .name { font-size: 24px; font-weight: bold; margin: 0; }
+    .mood-box { font-size: 14px; background: #fff; display: inline-block; padding: 6px 14px; border-radius: 20px; margin-top: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-    /* 图标区域布局：4列排列 */
+    /* 主屏网格：严格 4 列布局 */
     .grid {
-      width: 92%; margin-top: 25px;
-      display: grid; grid-template-columns: repeat(4, 1fr); 
-      column-gap: 15px; row-gap: 25px;
+      width: 90%; display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 20px 10px; /* 上下间距20，左右间距10 */
+      justify-items: center; align-items: start;
     }
 
-    /* 天气大组件：占 2 列宽 */
+    /* 天气大组件：跨 2 列 */
     .widget-weather {
-      grid-column: span 2; height: 155px;
+      grid-column: span 2; width: 100%; height: 160px;
       background: #f0f0f5; border-radius: 28px;
-      display: flex; flex-direction: column; justify-content: center; padding-left: 20px;
-      position: relative; overflow: hidden;
+      padding: 20px; position: relative; display: flex; flex-direction: column; justify-content: center;
     }
 
-    /* App 盒子 */
-    .app-box { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; }
+    /* App 容器：强制垂直对齐 */
+    .app-item {
+      display: flex; flex-direction: column; align-items: center; 
+      text-decoration: none; width: 100%;
+    }
+
     .icon-wrapper {
-      width: 60px; height: 60px; border-radius: 16px;
-      background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+      width: 62px; height: 62px; border-radius: 16px;
+      background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       display: flex; align-items: center; justify-content: center; overflow: hidden;
+      margin-bottom: 6px;
     }
     .icon-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .icon-wrapper img[src=""], .icon-wrapper img:not([src]) { opacity: 0; } /* 没图时不显示破图 */
-    
-    .app-label { margin-top: 6px; font-size: 11px; color: #333; font-weight: 500; }
+    /* 处理没上传图片时的显示 */
+    .icon-wrapper img[src=""], .icon-wrapper img:not([src]) { opacity: 0; }
 
-    /* 底部 Dock 栏：固定在底部 */
-    .dock {
-      position: fixed; bottom: 25px;
-      width: 90%; height: 90px;
-      background: rgba(255, 255, 255, 0.5);
+    .app-label { font-size: 11px; color: #333; font-weight: 500; white-space: nowrap; }
+
+    /* 底部 Dock：悬浮对齐 */
+    .dock-container {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      width: 90%; height: 92px; background: rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      border-radius: 30px; border: 1px solid rgba(255,255,255,0.3);
-      display: flex; justify-content: space-evenly; align-items: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      z-index: 99;
+      border-radius: 32px; border: 1px solid rgba(255,255,255,0.4);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      align-items: center; justify-items: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 100;
     }
 
-    /* 设置弹窗 */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; align-items: flex-end; }
+    /* 设置弹窗样式 */
+    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1001; align-items:flex-end; }
     .modal.active { display: flex; }
-    .modal-content { width: 100%; background: #fff; border-radius: 30px 30px 0 0; padding: 25px; box-sizing: border-box; animation: slideUp 0.3s ease; }
+    .modal-content { width:100%; background:#fff; border-radius:32px 32px 0 0; padding:25px; animation: slideUp 0.3s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .s-row { background: #f7f7f7; padding: 12px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .s-row { background:#f5f5f7; padding:15px; border-radius:18px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
   </style>
 </head>
 <body>
 
 <div class="screen">
   <div class="top-card">
-    <div class="name">猫猫</div>
-    <div class="mood-box" id="mood-text">今天心情：🩷</div>
+    <p class="name">猫猫</p>
+    <div class="mood-box" id="mood-val">今天心情：🩷</div>
   </div>
 
   <div class="grid">
     <div class="widget-weather" onclick="openSettings()">
       <div style="font-size:12px; color:#888;">青秀区 🔍</div>
-      <div style="font-size:36px; font-weight:bold; margin: 5px 0;">14°</div>
+      <div style="font-size:38px; font-weight:bold; margin: 4px 0;">14°</div>
       <div style="font-size:14px; color:#444;">大雾</div>
       <img id="img-weather" style="position:absolute; top:20px; right:20px; width:45px;">
     </div>
 
-    <a class="app-box" href="wechat.html">
+    <a href="wechat.html" class="app-item">
       <div class="icon-wrapper"><img src="./wechat.png" id="img-wechat"></div>
-      <div class="app-label">微信</div>
+      <span class="app-label">微信</span>
     </a>
-
-    <div class="app-box">
+    <div class="app-item">
       <div class="icon-wrapper"><img src="./health.png" id="img-health"></div>
-      <div class="app-label">状态</div>
+      <span class="app-label">状态</span>
     </div>
-
-    <div class="app-box">
+    <div class="app-item">
       <div class="icon-wrapper"><img src="./music.png" id="img-music"></div>
-      <div class="app-label">一起听歌</div>
+      <span class="app-label">一起听歌</span>
     </div>
-
-    <div class="app-box">
+    <div class="app-item">
       <div class="icon-wrapper"><img src="./books.png" id="img-books"></div>
-      <div class="app-label">一起看书</div>
+      <span class="app-label">一起看书</span>
     </div>
-
-    <div class="app-box">
+    <div class="app-item">
       <div class="icon-wrapper"><img src="./home.png" id="img-home"></div>
-      <div class="app-label">家园</div>
+      <span class="app-label">家园</span>
     </div>
-
-    <div class="app-box">
+    <div class="app-item">
       <div class="icon-wrapper"><img src="./reminders.png" id="img-reminders"></div>
-      <div class="app-label">提醒</div>
+      <span class="app-label">提醒</span>
     </div>
   </div>
+</div>
 
-  <div class="dock">
-    <a class="app-box" href="diary.html">
-      <div class="icon-wrapper"><img src="./diary.png" id="img-diary"></div>
-    </a>
-    <a class="app-box" href="memory.html">
-      <div class="icon-wrapper"><img src="./memory.png" id="img-memory"></div>
-    </a>
-    <a class="app-box" href="calendar.html">
-      <div class="icon-wrapper"><img src="./calendar.png" id="img-calendar"></div>
-    </a>
-    <div class="app-box" onclick="openSettings()">
-      <div class="icon-wrapper"><img src="./settings.png" id="img-settings"></div>
-    </div>
+<div class="dock-container">
+  <a href="diary.html" class="app-item">
+    <div class="icon-wrapper" style="margin-bottom:0;"><img src="./diary.png" id="img-diary"></div>
+  </a>
+  <a href="memory.html" class="app-item">
+    <div class="icon-wrapper" style="margin-bottom:0;"><img src="./memory.png" id="img-memory"></div>
+  </a>
+  <a href="calendar.html" class="app-item">
+    <div class="icon-wrapper" style="margin-bottom:0;"><img src="./calendar.png" id="img-calendar"></div>
+  </a>
+  <div class="app-item" onclick="openSettings()">
+    <div class="icon-wrapper" style="margin-bottom:0;"><img src="./settings.png" id="img-settings"></div>
   </div>
 </div>
 
 <div id="settings-modal" class="modal" onclick="if(event.target==this) closeSettings()">
   <div class="modal-content">
-    <div style="width:40px; height:4px; background:#ddd; border-radius:10px; margin:0 auto 15px;"></div>
-    <h4 style="margin:0 0 15px 5px;">个性化设置</h4>
-    
+    <div style="width:40px; height:5px; background:#ddd; border-radius:10px; margin:0 auto 20px;"></div>
     <div class="s-row">
-      <span>选择 App</span>
-      <select id="app-selector" style="border:none; background:none; font-weight:bold;">
+      <span>配置图标</span>
+      <select id="app-sel" style="border:none; background:none; font-weight:600;">
         <option value="wechat">微信</option>
         <option value="health">状态</option>
         <option value="music">一起听歌</option>
@@ -151,21 +151,18 @@
         <option value="memory">记忆(Dock)</option>
         <option value="calendar">日历(Dock)</option>
         <option value="settings">设置(Dock)</option>
-        <option value="weather">天气</option>
+        <option value="weather">天气组件</option>
       </select>
     </div>
-    
     <div class="s-row">
-      <span>更换图标</span>
-      <input type="file" id="icon-upload" accept="image/*">
+      <span>选取文件</span>
+      <input type="file" id="icon-file" accept="image/*">
     </div>
-
     <div class="s-row">
       <span>我的生日</span>
-      <input type="date" id="set-bday" style="border:none; background:none;">
+      <input type="date" id="bday-val" style="border:none;">
     </div>
-
-    <button onclick="saveSettings()" style="width:100%; padding:15px; background:#007AFF; color:white; border:none; border-radius:18px; font-weight:bold; font-size:16px; margin-top:10px;">保存修改</button>
+    <button onclick="saveAll()" style="width:100%; padding:16px; background:#007AFF; color:#fff; border:none; border-radius:20px; font-weight:600; font-size:16px; margin-top:10px;">完成并应用</button>
   </div>
 </div>
 
@@ -173,43 +170,40 @@
   function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
   function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
 
-  function saveSettings() {
-    const app = document.getElementById('app-selector').value;
-    const file = document.getElementById('icon-upload').files[0];
-    const bday = document.getElementById('set-bday').value;
+  function saveAll() {
+    const app = document.getElementById('app-sel').value;
+    const file = document.getElementById('icon-file').files[0];
+    const bday = document.getElementById('bday-val').value;
 
-    if(bday) localStorage.setItem('user-bday', bday);
+    if(bday) localStorage.setItem('u-bday', bday);
     if(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
         localStorage.setItem('icon-' + app, e.target.result);
-        const targetImg = document.getElementById('img-' + app);
-        if(targetImg) targetImg.src = e.target.result;
+        const img = document.getElementById('img-' + app);
+        if(img) img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
     closeSettings();
-    checkBday();
+    updateUI();
   }
 
-  function checkBday() {
-    const bday = localStorage.getItem('user-bday');
-    if(bday) {
-      const today = new Date().toISOString().slice(5,10);
-      if(today === bday.slice(5,10)) document.getElementById('mood-text').innerText = "🎂 生日快乐！";
+  function updateUI() {
+    const apps = ['wechat','health','music','books','home','reminders','diary','memory','calendar','settings','weather'];
+    apps.forEach(a => {
+      const saved = localStorage.getItem('icon-' + a);
+      const img = document.getElementById('img-' + a);
+      if(saved && img) img.src = saved;
+    });
+    // 生日检查
+    const bday = localStorage.getItem('u-bday');
+    if(bday && bday.slice(5,10) === new Date().toISOString().slice(5,10)) {
+      document.getElementById('mood-val').innerText = "🎂 生日快乐！";
     }
   }
 
-  // 加载所有保存过的图标
-  window.onload = function() {
-    const allApps = ['wechat','health','music','books','home','reminders','diary','memory','calendar','settings','weather'];
-    allApps.forEach(app => {
-      const saved = localStorage.getItem('icon-' + app);
-      const img = document.getElementById('img-' + app);
-      if(saved && img) img.src = saved;
-    });
-    checkBday();
-  };
+  window.onload = updateUI;
 </script>
 
 </body>
