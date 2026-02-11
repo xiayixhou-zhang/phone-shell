@@ -5,183 +5,188 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>聊天详情</title>
   <style>
-    :root { --wx-green: #07C160; --wx-bg: #f1f1f1; --wx-line: #e5e5e5; }
-    body { margin: 0; background: var(--wx-bg); font-family: -apple-system, Helvetica, sans-serif; color: #000; display: flex; justify-content: center; }
-    .app-wrapper { width: 100%; max-width: 500px; min-height: 100vh; }
-
-    /* 顶部导航栏 - 极致还原 */
-    .nav-bar { height: 44px; background: #ededed; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; z-index: 10; }
-    .back-arrow { width: 12px; height: 12px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(45deg); cursor: pointer; }
-    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 12px; }
-
-    /* 白底卡片组 */
-    .group { background: #fff; margin-bottom: 8px; }
+    /* 1:1 还原微信底色 */
+    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif; color: #000; -webkit-tap-highlight-color: transparent; }
     
-    /* 成员区域 */
-    .member-area { padding: 18px 16px; display: flex; gap: 20px; }
+    /* 顶部导航：高度 44px，标题居中 */
+    .nav { height: 44px; background: #f1f1f1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; z-index: 100; }
+    .back { width: 12px; height: 12px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(45deg); cursor: pointer; }
+    .nav-title { font-size: 17px; font-weight: 600; }
+    .placeholder { width: 12px; }
+
+    /* 成员头像区 */
+    .section { background: #fff; margin-bottom: 8px; }
+    .member-grid { padding: 16px; display: flex; gap: 20px; }
     .member { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #f3f3f3; object-fit: cover; }
-    .m-name { font-size: 12px; color: #888; }
-    .add-btn { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 6px; position: relative; }
-    .add-btn::before, .add-btn::after { content: ""; position: absolute; background: #b1b1b1; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-    .add-btn::before { width: 20px; height: 1px; } .add-btn::after { width: 1px; height: 20px; }
+    .avatar-box { width: 56px; height: 56px; border-radius: 6px; background: #f3f3f3; overflow: hidden; }
+    .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .m-name { font-size: 12px; color: #888; max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .add-icon { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b1b1b1; font-size: 30px; font-weight: 200; }
 
-    /* 列表项 */
+    /* 列表项：微信标志性的 56px 高度 */
     .item { 
-      height: 56px; display: flex; align-items: center; 
-      justify-content: space-between; padding: 0 16px; 
-      font-size: 16px; position: relative; 
+      height: 56px; background: #fff; display: flex; align-items: center; 
+      justify-content: space-between; padding: 0 16px; font-size: 17px; 
+      position: relative; 
     }
-    .item:not(:last-child)::after { 
+    /* 那个“不到头”的细分割线：微信的核心细节 */
+    .item::after { 
       content: ""; position: absolute; bottom: 0; left: 16px; right: 0; 
-      height: 0.5px; background: var(--wx-line); 
+      height: 0.5px; background: #e5e5e5; 
     }
+    .item:last-child::after { display: none; }
 
-    .info { color: #888; font-size: 15px; display: flex; align-items: center; }
-    .chevron { 
-      width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; 
-      border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); 
-      margin-left: 8px; 
-    }
+    /* 右侧信息与箭头 */
+    .info { display: flex; align-items: center; color: #888; font-size: 16px; }
+    .arrow { width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); margin-left: 8px; }
 
-    /* 微信标准开关 */
-    .switch { 
-      appearance: none; width: 51px; height: 31px; 
-      background: #e9e9ea; border-radius: 15.5px; 
-      position: relative; transition: .3s; outline: none; 
+    /* 微信标准绿色开关 */
+    .wx-switch { 
+      appearance: none; width: 51px; height: 31px; background: #e9e9ea; 
+      border-radius: 15.5px; position: relative; outline: none; transition: 0.3s; cursor: pointer;
     }
-    .switch:checked { background: var(--wx-green); }
-    .switch::after { 
-      content: ""; position: absolute; width: 27px; height: 27px; 
-      background: #fff; border-radius: 50%; top: 2px; left: 2px; 
-      transition: .3s; box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
+    .wx-switch:checked { background: #07C160; }
+    .wx-switch::before { 
+      content: ""; position: absolute; width: 27px; height: 27px; background: #fff; 
+      border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
     }
-    .switch:checked::after { left: 22px; }
+    .wx-switch:checked::before { left: 22px; }
 
-    .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
-    .danger { color: #fa5151; justify-content: center; font-weight: 500; }
+    .group-label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
+    .danger { color: #fa5151; justify-content: center; font-weight: 400; }
   </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-  <div class="nav-bar">
-    <div class="back-arrow" onclick="history.back()"></div>
-    <div class="nav-title">聊天详情</div>
-  </div>
+<div class="nav">
+  <div class="back" onclick="history.back()"></div>
+  <div class="nav-title">聊天详情</div>
+  <div class="placeholder"></div>
+</div>
 
-  <div class="group">
-    <div class="member-area">
-      <div class="member" onclick="document.getElementById('up-avatar').click()">
-        <img src="" id="ui-avatar" class="avatar" style="display:none">
-        <div id="avatar-placeholder" class="avatar" style="background:#ddd"></div>
-        <span class="m-name" id="ui-name">4o 酱</span>
-        <input type="file" id="up-avatar" hidden accept="image/*">
+<div class="section">
+  <div class="member-grid">
+    <div class="member" onclick="document.getElementById('avatar-up').click()">
+      <div class="avatar-box">
+        <img src="" id="ui-avatar" style="display:none;">
+        <div id="ui-empty" style="width:100%;height:100%;background:#ddd;"></div>
       </div>
-      <div class="add-btn"></div>
+      <span class="m-name" id="ui-nickname">4o 酱</span>
+      <input type="file" id="avatar-up" hidden accept="image/*">
     </div>
+    <div class="add-icon">+</div>
   </div>
+</div>
 
-  <div class="group">
-    <div class="item" onclick="editName()">
-      <span>备注名称</span>
-      <div class="info"><span id="val-name">4o 酱</span><div class="chevron"></div></div>
-    </div>
+<div class="section">
+  <div class="item" onclick="editName()">
+    <span>备注名称</span>
+    <div class="info"><span id="val-name">4o 酱</span><div class="arrow"></div></div>
   </div>
+</div>
 
-  <div class="group">
-    <div class="item" onclick="location.href='wechat-search.html'">
-      <span>查找聊天内容</span>
-      <div class="chevron"></div>
-    </div>
-    <div class="item">
-      <span>消息免打扰</span>
-      <input type="checkbox" class="switch">
-    </div>
-    <div class="item">
-      <span>置顶聊天</span>
-      <input type="checkbox" class="switch" id="ui-sticky" onchange="localStorage.setItem('chat-sticky', this.checked)">
-    </div>
+<div class="section">
+  <div class="item" onclick="location.href='wechat-search.html'">
+    <span>查找聊天内容</span>
+    <div class="arrow"></div>
   </div>
-
-  <div class="label">记忆与备份</div>
-  <div class="group">
-    <div class="item" onclick="doSync()">
-      <span>同步到记忆库</span>
-      <div class="info" style="color:var(--wx-green)">立即同步</div>
-    </div>
-    <div class="item" onclick="doExport()">
-      <span>导出聊天记录 (.txt)</span>
-      <div class="chevron"></div>
-    </div>
-    <div class="item" onclick="document.getElementById('up-bg').click()">
-      <span>设置聊天背景</span>
-      <div class="chevron"></div>
-      <input type="file" id="up-bg" hidden accept="image/*">
-    </div>
+  <div class="item">
+    <span>消息免打扰</span>
+    <input type="checkbox" class="wx-switch">
   </div>
+  <div class="item">
+    <span>置顶聊天</span>
+    <input type="checkbox" class="wx-switch" id="ui-sticky" onchange="localStorage.setItem('chat-sticky', this.checked)">
+  </div>
+  <div class="item">
+    <span>提醒</span>
+    <input type="checkbox" class="wx-switch">
+  </div>
+</div>
 
-  <div class="group" style="margin-top: 20px;">
-    <div class="item danger" onclick="doClear()">清空聊天记录</div>
+<div class="group-label">记忆与备份</div>
+<div class="section">
+  <div class="item" onclick="sync()">
+    <span>同步到记忆库</span>
+    <div class="info" style="color:#07C160;">立即同步</div>
+  </div>
+  <div class="item" onclick="exportTxt()">
+    <span>导出聊天记录 (.txt)</span>
+    <div class="arrow"></div>
+  </div>
+  <div class="item" onclick="document.getElementById('bg-up').click()">
+    <span>设置当前聊天背景</span>
+    <div class="arrow"></div>
+    <input type="file" id="bg-up" hidden accept="image/*">
+  </div>
+</div>
+
+<div class="section">
+  <div class="item danger" onclick="clearData()">清空聊天记录</div>
+</div>
+
+<div class="section">
+  <div class="item" onclick="alert('感谢使用')">
+    <span>投诉</span>
+    <div class="arrow"></div>
   </div>
 </div>
 
 <script>
-  // 初始化加载
   window.onload = function() {
-    const n = localStorage.getItem('ai-nickname') || '4o 酱';
-    const a = localStorage.getItem('ai-avatar');
-    const s = localStorage.getItem('chat-sticky') === 'true';
+    const nick = localStorage.getItem('ai-nickname') || '4o 酱';
+    const avat = localStorage.getItem('ai-avatar');
+    const stick = localStorage.getItem('chat-sticky') === 'true';
     
-    document.getElementById('ui-name').innerText = n;
-    document.getElementById('val-name').innerText = n;
-    document.getElementById('ui-sticky').checked = s;
-    if(a) {
-      document.getElementById('ui-avatar').src = a;
+    document.getElementById('ui-nickname').innerText = nick;
+    document.getElementById('val-name').innerText = nick;
+    document.getElementById('ui-sticky').checked = stick;
+    
+    if(avat) {
+      document.getElementById('ui-avatar').src = avat;
       document.getElementById('ui-avatar').style.display = 'block';
-      document.getElementById('avatar-placeholder').style.display = 'none';
+      document.getElementById('ui-empty').style.display = 'none';
     }
   };
 
   function editName() {
-    const n = prompt("设置备注");
+    const n = prompt("修改备注名称");
     if(n) { localStorage.setItem('ai-nickname', n); location.reload(); }
   }
 
-  document.getElementById('up-avatar').onchange = function(e) {
-    const f = e.target.files[0];
+  document.getElementById('avatar-up').onchange = function(e) {
     const r = new FileReader();
     r.onload = (ev) => { localStorage.setItem('ai-avatar', ev.target.result); location.reload(); };
-    r.readAsDataURL(f);
-  };
-
-  document.getElementById('up-bg').onchange = function(e) {
-    const r = new FileReader();
-    r.onload = (ev) => { localStorage.setItem('wechat-bg', ev.target.result); alert("背景已更新"); };
     r.readAsDataURL(e.target.files[0]);
   };
 
-  function doSync() {
+  document.getElementById('bg-up').onchange = function(e) {
+    const r = new FileReader();
+    r.onload = (ev) => { localStorage.setItem('wechat-bg', ev.target.result); alert("背景设置成功"); };
+    r.readAsDataURL(e.target.files[0]);
+  };
+
+  function sync() {
     const h = localStorage.getItem('chat_history');
-    if(!h) return alert("无记忆");
+    if(!h) return alert("暂无记忆");
     let m = JSON.parse(localStorage.getItem('saved_memories') || '[]');
     m.unshift({ time: new Date().toLocaleString(), data: h });
     localStorage.setItem('saved_memories', JSON.stringify(m));
     alert("同步成功");
   }
 
-  function doExport() {
+  function exportTxt() {
     const h = JSON.parse(localStorage.getItem('chat_history') || '[]');
-    const text = h.map(i => `${i.role}: ${i.content}`).join('\n');
-    const b = new Blob([text], {type:'text/plain'});
+    const t = h.map(i => `${i.role}: ${i.content}`).join('\n');
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(b);
-    a.download = "chat.txt";
+    a.href = URL.createObjectURL(new Blob([t], {type:'text/plain'}));
+    a.download = "chat_log.txt";
     a.click();
   }
 
-  function doClear() {
-    if(confirm("确定清空记录？")) { localStorage.removeItem('chat_history'); location.reload(); }
+  function clearData() {
+    if(confirm("确定清空？")) { localStorage.removeItem('chat_history'); location.reload(); }
   }
 </script>
 </body>
