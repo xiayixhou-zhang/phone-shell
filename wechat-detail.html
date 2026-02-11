@@ -27,7 +27,8 @@
     /* 昵称：字体更小更灰 */
     .m-name { font-size: 11px; color: #888; text-align: center; width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    
+    /* 添加按钮：虚线边框，细字体 */
+    .add-btn { width: 50px; height: 50px; border: 1px dashed #bfbfbf; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #bfbfbf; cursor: pointer; }
     /* 纯CSS画一个细的加号 */
     .add-btn::before { content: ""; width: 20px; height: 1.5px; background-color: #bfbfbf; position: absolute; }
     .add-btn::after { content: ""; width: 1.5px; height: 20px; background-color: #bfbfbf; position: absolute; }
@@ -42,38 +43,38 @@
     /* 右侧箭头：优化为更细的灰色 */
     .arrow { width: 8px; height: 8px; border-top: 1.5px solid #b2b2b2; border-right: 1.5px solid #b2b2b2; transform: rotate(45deg); margin-left: 8px; opacity: 0.8; }
 
-    /* 彻底锁定微信绿色开关样式 */
-    .switch { 
-      appearance: none; 
-      -webkit-appearance: none; 
-      width: 50px; 
-      height: 30px; 
-      background: #e9e9ea; 
-      border-radius: 15px; 
-      position: relative; 
-      transition: 0.3s; 
-      outline: none; 
+    /* 开关样式 */
+    .switch { 
+      appearance: none; 
+      -webkit-appearance: none; 
+      width: 51px; 
+      height: 31px; 
+      background: #e9e9ea; 
+      border-radius: 16px; 
+      position: relative; 
+      transition: 0.3s; 
+      outline: none; 
       border: none;
       cursor: pointer;
-      display: block; 
+      display: block; 
     }
     .switch:checked { background: #07C160; }
-    .switch::after { 
-      content: ""; 
-      position: absolute; 
-      width: 26px; 
-      height: 26px; 
-      background: #fff; 
-      border-radius: 50%; 
-      top: 2px; 
-      left: 2px; 
-      transition: 0.3s; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    .switch::after { 
+      content: ""; 
+      position: absolute; 
+      width: 27px; 
+      height: 27px; 
+      background: #fff; 
+      border-radius: 50%; 
+      top: 2px; 
+      left: 2px; 
+      transition: 0.3s cubic-bezier(0.3, 1.5, 0.7, 1); 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
     }
     .switch:checked::after { left: 22px; }
 
     .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
-    .danger { color: #fa5151; justify-content: center; font-weight: 500; border: none; background: #fff; width: 100%; height: 56px; font-size: 17px; cursor: pointer; display: flex; align-items: center; }
+    .danger { color: #fa5151; justify-content: center; font-weight: 500; border: none; background: #fff; width: 100%; height: 56px; font-size: 17px; cursor: pointer; display: flex; align-items: center; margin-top: 8px;}
   </style>
 </head>
 <body>
@@ -87,11 +88,11 @@
   <div class="member-box">
     <div class="member" onclick="document.getElementById('f1').click()">
       <img src="" id="ui-av" class="avatar" style="display:none">
-      <div id="ui-empty" class="avatar" style="background:#ddd"></div>
+      <div id="ui-empty" class="avatar" style="background:#eeeeee"></div>
       <span class="m-name" id="ui-nick">4o 酱</span>
       <input type="file" id="f1" hidden accept="image/*">
     </div>
-    <div class="add-btn">+</div>
+    <div class="add-btn"></div>
   </div>
 </div>
 
@@ -142,7 +143,7 @@
     document.getElementById('val-n').innerText = n;
     document.getElementById('ui-st').checked = s;
     document.getElementById('mute-st').checked = m;
-    
+   
     if(a) {
       document.getElementById('ui-av').src = a;
       document.getElementById('ui-av').style.display = 'block';
