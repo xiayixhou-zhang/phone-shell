@@ -5,29 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>聊天详情</title>
   <style>
-    /* 核心：1:1 还原微信那种清爽感 */
-    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-    
-    /* 顶部导航修复：确保标题绝对居中 */
-    .nav { height: 44px; background: #f1f1f1; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; z-index: 100; }
-    .back { width: 12px; height: 12px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(45deg); cursor: pointer; position: relative; z-index: 10; }
-    .nav-title { position: absolute; left: 0; right: 0; text-align: center; font-size: 17px; font-weight: 600; line-height: 44px; pointer-events: none; }
+    /* 全局设置 */
+    body { margin: 0; background-color: #ededed; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+   
+    /* 顶部导航：背景色改为 #ededed，更接近图二 */
+    .nav { height: 44px; background: #ededed; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 99; }
+    /* 返回箭头：优化线条粗细和颜色 */
+    .back { width: 11px; height: 11px; border-left: 2px solid #181818; border-bottom: 2px solid #181818; transform: rotate(45deg); cursor: pointer; margin-right: 4px; }
+    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; color: #181818; margin-right: 16px; /* 修正居中偏移 */ }
 
-    /* 成员区域修复：头像名字上下对齐，横向排开 */
+    /* 区域通用 */
     .section { background: #fff; margin-bottom: 8px; }
-    .member-box { padding: 18px 16px; display: flex; gap: 20px; align-items: flex-start; }
-    .member { display: flex; flex-direction: column; align-items: center; width: 56px; gap: 8px; cursor: pointer; }
-    .avatar { width: 56px; height: 56px; border-radius: 6px; background: #f3f3f3; object-fit: cover; flex-shrink: 0; }
-    .m-name { font-size: 12px; color: #888; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .add-btn { width: 54px; height: 54px; border: 1px dashed #d3d3d3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #b1b1b1; font-size: 30px; font-weight: 200; flex-shrink: 0; }
 
-    /* 列表项修复：垂直居中，箭头防挤压 */
-    .item { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; position: relative; background: #fff; }
+    /* 成员区域：完全复刻图二样式 */
+    .member-box { padding: 15px 20px 25px 20px; display: flex; gap: 20px; align-items: flex-start; }
+    .member { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+    
+    /* 头像：圆角改为4px，接近图二 */
+    .avatar { width: 52px; height: 52px; border-radius: 4px; background: #eeeeee; object-fit: cover; }
+    
+    /* 昵称：字体更小更灰 */
+    .m-name { font-size: 11px; color: #888; text-align: center; width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* 添加按钮：虚线边框，细字体 */
+    .add-btn { width: 50px; height: 50px; border: 1px dashed #bfbfbf; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #bfbfbf; cursor: pointer; }
+    /* 纯CSS画一个细的加号 */
+    .add-btn::before { content: ""; width: 20px; height: 1.5px; background-color: #bfbfbf; position: absolute; }
+    .add-btn::after { content: ""; width: 1.5px; height: 20px; background-color: #bfbfbf; position: absolute; }
+
+    /* 列表项 */
+    .item { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; position: relative; background: #fff; color: #111; }
     .item::after { content: ""; position: absolute; bottom: 0; left: 16px; right: 0; height: 0.5px; background: #e5e5e5; }
     .item:last-child::after { display: none; }
 
-    .info { color: #888; font-size: 16px; display: flex; align-items: center; }
-    .arrow { width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); margin-left: 8px; flex-shrink: 0; }
+    .info { color: #7f7f7f; font-size: 16px; display: flex; align-items: center; }
+    
+    /* 右侧箭头：优化为更细的灰色 */
+    .arrow { width: 8px; height: 8px; border-top: 1.5px solid #b2b2b2; border-right: 1.5px solid #b2b2b2; transform: rotate(45deg); margin-left: 8px; opacity: 0.8; }
 
     /* 彻底锁定微信绿色开关样式 */
     .switch { 
