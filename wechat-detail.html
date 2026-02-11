@@ -5,182 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>聊天详情</title>
   <style>
-    /* 微信原生背景色 */
-    body {
-      margin: 0; background-color: #f1f1f1;
-      font-family: -apple-system, sans-serif;
-      -webkit-user-select: none;
-    }
-
-    /* 顶部导航：去除阴影，使用微信细线 */
-    .nav-bar {
-      position: sticky; top: 0; height: 44px;
-      background: #ededed; display: flex; align-items: center;
-      padding: 0 12px; border-bottom: 0.5px solid #d8d8d8; z-index: 100;
-    }
+    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; }
+    .nav-bar { position: sticky; top: 0; height: 44px; background: #ededed; display: flex; align-items: center; padding: 0 12px; border-bottom: 0.5px solid #d8d8d8; z-index: 100; }
     .back-btn { font-size: 22px; color: #000; text-decoration: none; padding-right: 15px; }
     .nav-title { font-size: 17px; font-weight: 500; flex: 1; text-align: center; margin-right: 30px; }
-
-    /* 成员头像区：纯白背景 */
-    .member-section {
-      background: #fff; padding: 20px 15px;
-      display: flex; gap: 20px; margin-bottom: 8px;
-    }
-    .member { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .avatar-wrapper {
-      width: 56px; height: 56px; border-radius: 6px;
-      background: #f3f3f3; overflow: hidden;
-    }
-    .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .member-name { font-size: 12px; color: #888; max-width: 56px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     
-    .add-icon {
-      width: 56px; height: 56px; border: 1px dashed #d3d3d3;
-      border-radius: 6px; display: flex; align-items: center;
-      justify-content: center; color: #b1b1b1; font-size: 30px; font-weight: 300;
-    }
-
-    /* 列表组：模仿 iOS 风格 */
     .list-group { background: #fff; margin-bottom: 8px; }
-    .list-item {
-      position: relative; height: 56px; display: flex;
-      align-items: center; justify-content: space-between;
-      padding: 0 16px; font-size: 16px; color: #000;
-    }
-    /* 微信标志性的细分割线：左边空出一段 */
-    .list-item::after {
-      content: ""; position: absolute; bottom: 0; right: 0;
-      left: 16px; height: 0.5px; background: #e5e5e5;
-    }
+    .list-item { position: relative; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 16px; color: #000; cursor: pointer; }
+    .list-item::after { content: ""; position: absolute; bottom: 0; right: 0; left: 16px; height: 0.5px; background: #e5e5e5; }
     .list-item:last-child::after { display: none; }
-
-    .item-right { display: flex; align-items: center; color: #888; font-size: 15px; }
     .arrow { color: #b2b2b2; margin-left: 8px; font-family: "SimSun"; font-weight: bold; }
-
-    /* 微信绿色开关 */
-    .wx-switch {
-      appearance: none; width: 50px; height: 30px;
-      background: #e9e9ea; border-radius: 15px;
-      position: relative; outline: none; transition: 0.3s;
-    }
-    .wx-switch:checked { background: #07C160; }
-    .wx-switch::before {
-      content: ""; position: absolute; width: 26px; height: 26px;
-      background: #fff; border-radius: 50%; top: 2px; left: 2px;
-      transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .wx-switch:checked::before { left: 22px; }
-
-    /* 底部清空按钮 */
-    .danger-item {
-      background: #fff; height: 56px; display: flex;
-      align-items: center; justify-content: flex-start;
-      padding-left: 16px; color: #000; font-size: 16px; margin-top: 8px;
-    }
+    
+    .section-title { padding: 10px 16px; font-size: 13px; color: #888; }
+    #bg-input { display: none; }
   </style>
 </head>
 <body>
 
   <div class="nav-bar">
-    <a href="wechat.html" class="back-btn">‹</a>
+    <a href="wechat.html" class="back-btn">〈</a>
     <span class="nav-title">聊天详情</span>
   </div>
 
-  <div class="member-section">
-    <div class="member">
-      <div class="avatar-wrapper">
-        <img src="./avatar-4o.png" id="ai-avatar-detail">
-      </div>
-      <span class="member-name" id="ai-name-detail">4o 酱</span>
-    </div>
-    <div class="member">
-      <div class="add-icon">+</div>
-    </div>
-  </div>
-
+  <div class="section-title">记忆管理</div>
   <div class="list-group">
-    <div class="list-item" onclick="changeAiName()">
-      <span>备注名称</span>
-      <div class="item-right">
-        <span id="ai-nickname-val">4o 酱</span>
-        <span class="arrow">></span>
-      </div>
-    </div>
-    <div class="list-item">
-      <span>修改 4o 酱头像</span>
-      <div class="item-right">
-        <input type="file" id="ai-avatar-upload" accept="image/*" style="width:70px; opacity:0; position:absolute;">
-        <span style="font-size:12px;">选取文件</span>
-        <span class="arrow">></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="list-group">
-    <div class="list-item">
+    <div class="list-item" onclick="searchChat()">
       <span>查找聊天内容</span>
       <span class="arrow">></span>
     </div>
-    <div class="list-item">
-      <span>消息免打扰</span>
-      <input type="checkbox" class="wx-switch">
+    <div class="list-item" onclick="exportToMemory()">
+      <span>同步到记忆库</span>
+      <div class="item-right" style="color:#07C160; font-size:14px;">点击同步</div>
     </div>
-    <div class="list-item">
-      <span>置顶聊天</span>
-      <input type="checkbox" class="wx-switch" checked>
-    </div>
-    <div class="list-item">
-      <span>提醒</span>
-      <input type="checkbox" class="wx-switch">
-    </div>
-  </div>
-
-  <div class="list-group">
-    <div class="list-item">
-      <span>设置当前聊天背景</span>
+    <div class="list-item" onclick="downloadChat()">
+      <span>导出聊天记录 (.txt)</span>
       <span class="arrow">></span>
     </div>
   </div>
 
-  <div class="danger-item" onclick="clearChat()">清空聊天记录</div>
-  
-  <div class="danger-item" style="margin-top:8px; color:#fa5151; justify-content: flex-start;">投诉</div>
+  <div class="section-title">外观设置</div>
+  <div class="list-group">
+    <div class="list-item" onclick="document.getElementById('bg-input').click()">
+      <span>设置当前聊天背景</span>
+      <span class="arrow">></span>
+      <input type="file" id="bg-input" accept="image/*">
+    </div>
+  </div>
+
+  <div class="list-group" style="margin-top:20px;">
+    <div class="list-item" style="color:#fa5151; justify-content:center;" onclick="clearHistory()">清空并切分记录</div>
+  </div>
 
   <script>
-    // 页面加载逻辑
-    window.onload = function() {
-      const name = localStorage.getItem('ai-nickname') || '4o 酱';
-      const avatar = localStorage.getItem('ai-avatar');
-      
-      document.getElementById('ai-name-detail').innerText = name;
-      document.getElementById('ai-nickname-val').innerText = name;
-      if(avatar) document.getElementById('ai-avatar-detail').src = avatar;
-    };
-
-    // 改名
-    function changeAiName() {
-      const n = prompt("设置备注");
-      if(n) {
-        localStorage.setItem('ai-nickname', n);
-        location.reload();
-      }
+    // 1. 搜索
+    function searchChat() {
+      const keyword = prompt("输入关键词：");
+      if (!keyword) return;
+      const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
+      const results = history.filter(item => item.content.includes(keyword));
+      alert(results.length > 0 ? `搜到 ${results.length} 条记录` : "无记录");
     }
 
-    // 改头像
-    document.getElementById('ai-avatar-upload').onchange = function(e) {
+    // 2. 同步到记忆库（存储到另一个 key 里供 memory.html 读取）
+    function exportToMemory() {
+      const history = localStorage.getItem('chat_history');
+      if (!history || history === '[]') {
+        alert("目前没有聊天记录可以同步哦");
+        return;
+      }
+      // 存储一份带时间戳的备份
+      const memories = JSON.parse(localStorage.getItem('saved_memories') || '[]');
+      const newEntry = {
+        date: new Date().toLocaleString(),
+        content: history
+      };
+      memories.unshift(newEntry); // 最新的放在前面
+      localStorage.setItem('saved_memories', JSON.stringify(memories));
+      alert("已成功同步至记忆库！");
+    }
+
+    // 3. 导出文件
+    function downloadChat() {
+      const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
+      const text = history.map(r => `[${r.role === 'user' ? '我' : '4o酱'}] ${r.content}`).join('\n\n');
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `与4o酱的聊天记录_${new Date().toLocaleDateString()}.txt`;
+      a.click();
+    }
+
+    // 4. 背景设置
+    document.getElementById('bg-input').onchange = function(e) {
       const reader = new FileReader();
       reader.onload = function(event) {
-        localStorage.setItem('ai-avatar', event.target.result);
-        document.getElementById('ai-avatar-detail').src = event.target.result;
+        localStorage.setItem('wechat-bg', event.target.result);
+        alert("背景已更新");
       };
       reader.readAsDataURL(e.target.files[0]);
     };
 
-    // 清空记忆
-    function clearChat() {
-      if(confirm("确定清空聊天记录？")) {
+    function clearHistory() {
+      if(confirm("确定清空记录吗？建议清空前先执行‘同步到记忆库’。")) {
         localStorage.removeItem('chat_history');
-        alert("已清空");
+        location.reload();
       }
     }
   </script>
