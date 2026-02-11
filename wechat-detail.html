@@ -7,11 +7,38 @@
   <style>
     /* 核心：1:1 还原微信那种清爽感 */
     body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-    
-    /* 顶部：44px 高度，细边框 */
-    .nav { height: 44px; background: #f1f1f1; display: flex; align-items: center; padding: 0 16px; border-bottom: 0.5px solid #d1d1d1; position: sticky; top: 0; }
-    .back { width: 12px; height: 12px; border-left: 2.5px solid #000; border-bottom: 2.5px solid #000; transform: rotate(45deg); cursor: pointer; }
-    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 12px; }
+   
+    /* --- 修改部分：顶部导航栏优化 --- */
+    .nav { 
+      height: 48px; /* 略微增加高度适配视觉 */
+      background: #f1f1f1; 
+      display: flex; 
+      align-items: center; 
+      padding: 0 16px; 
+      border-bottom: 0.5px solid #d1d1d1; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100;
+    }
+    /* 还原 iOS 细长的返回箭头 */
+    .back { 
+      width: 12px; 
+      height: 12px; 
+      border-left: 1.5px solid #000; /* 减细线条 */
+      border-bottom: 1.5px solid #000; 
+      transform: rotate(45deg); 
+      cursor: pointer; 
+      margin-left: 4px;
+    }
+    .nav-title { 
+      flex: 1; 
+      text-align: center; 
+      font-size: 17px; 
+      font-weight: 700; /* 加粗字体 */
+      letter-spacing: -0.4px; /* 紧凑字间距 */
+      margin-right: 20px; /* 抵消左侧箭头的占位，实现视觉居中 */
+    }
+    /* --- 修改结束 --- */
 
     /* 白底区域：微信标志性的间距 */
     .section { background: #fff; margin-bottom: 8px; }
@@ -30,41 +57,41 @@
     .arrow { width: 8px; height: 8px; border-top: 1.5px solid #c7c7cc; border-right: 1.5px solid #c7c7cc; transform: rotate(45deg); margin-left: 8px; }
 
     /* 彻底锁定微信绿色开关样式 */
-.switch { 
-  appearance: none; 
+.switch { 
+  appearance: none; 
   -webkit-appearance: none; /* 兼容 iOS */
-  width: 50px; 
-  height: 30px; 
-  background: #e9e9ea; 
-  border-radius: 15px; 
-  position: relative; 
-  transition: 0.3s; 
-  outline: none; 
+  width: 50px; 
+  height: 30px; 
+  background: #e9e9ea; 
+  border-radius: 15px; 
+  position: relative; 
+  transition: 0.3s; 
+  outline: none; 
   border: none;
   cursor: pointer;
   display: block; /* 确保它是块级显示 */
 }
 
-.switch:checked { 
+.switch:checked { 
   background: #07C160; /* 微信绿 */
 }
 
 /* 滑块上的白色圆点 */
-.switch::after { 
-  content: ""; 
-  position: absolute; 
-  width: 26px; 
-  height: 26px; 
-  background: #fff; 
-  border-radius: 50%; 
-  top: 2px; 
-  left: 2px; 
-  transition: 0.3s; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+.switch::after { 
+  content: ""; 
+  position: absolute; 
+  width: 26px; 
+  height: 26px; 
+  background: #fff; 
+  border-radius: 50%; 
+  top: 2px; 
+  left: 2px; 
+  transition: 0.3s; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
 }
 
-.switch:checked::after { 
-  left: 22px; 
+.switch:checked::after { 
+  left: 22px; 
 }
 
     .label { padding: 14px 16px 6px; font-size: 14px; color: #888; }
@@ -137,7 +164,7 @@
     document.getElementById('val-n').innerText = n;
     document.getElementById('ui-st').checked = s;
     document.getElementById('mute-st').checked = m;
-    
+   
     if(a) {
       document.getElementById('ui-av').src = a;
       document.getElementById('ui-av').style.display = 'block';
@@ -145,7 +172,6 @@
     }
   };
 
-  // 1. 真·同步记忆库
   function doSync() {
     const history = localStorage.getItem('chat_history');
     if (!history || history === '[]') {
@@ -161,7 +187,6 @@
     alert("✅ 同步成功！数据已存入记忆仓库。");
   }
 
-  // 2. 真·导出聊天记录
   function doExport() {
     const historyData = localStorage.getItem('chat_history');
     if (!historyData || historyData === '[]') {
