@@ -2,65 +2,111 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>我们的小日历♡</title>
+  <title>我们的小日历 ♡</title>
   <style>
-    body { font-family: sans-serif; text-align: center; background-color: #fff0f5; color: #333; }
-    h1 { color: #ff69b4; }
-    .highlight { color: red; font-weight: bold; }
-    .section { margin: 20px auto; max-width: 500px; background: #ffe4f2; padding: 20px; border-radius: 10px; }
+    body { font-family: "Arial", sans-serif; background-color: #fff0f5; color: #333; margin: 0; padding: 0; }
+    h1 { text-align: center; padding: 20px; color: #ff69b4; }
+    #calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px; max-width: 420px; margin: auto; }
+    .day { padding: 10px; background: #ffe4f2; border-radius: 8px; text-align: center; cursor: pointer; }
+    .today { background: #ffb6c1; font-weight: bold; }
+    .special { border: 2px solid #ff1493; }
+    .note-dot { display: block; width: 6px; height: 6px; background: #ff1493; border-radius: 50%; margin: 4px auto 0; }
+    .header { grid-column: span 7; text-align: center; font-weight: bold; margin-bottom: 10px; }
   </style>
 </head>
 <body>
   <h1>我们的小日历 ♡</h1>
-  <div class="section" id="today"></div>
-  <div class="section" id="specialDays"></div>
-  <div class="section" id="loveAnniversary"></div>
-  <div class="section" id="nextPeriod"></div>
+  <div class="header" id="monthHeader"></div>
+  <div id="calendar"></div>
 
   <script>
-    // 设置基本数据
-    const startLoveDate = new Date("2025-07-22"); // 在一起的日子
+    const loveStartDate = new Date("2025-07-22");
     const yourBirthday = "10-23";
     const myBirthday = "07-22";
-    const periodStartDate = new Date("2026-02-02"); // 最近一次姨妈日
+    const periodStartDate = new Date("2026-02-02");
     const periodCycle = 28;
-
-    const specialDates = {
+    const festivalMap = {
       "02-14": "情人节",
       "12-31": "年三十",
+      "01-01": "元旦",
       "10-23": "宝宝生日",
-      "07-22": "哥哥生日"
+      "07-22": "哥哥生日",
+      "02-10": "除夕",
+      "02-11": "春节",
+      "02-24": "元宵节"
     };
 
-    function formatDate(date) {
-      return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-based
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const calendar = document.getElementById("calendar");
+
+    document.getElementById("monthHeader").innerText = `${year}年 ${month + 1}月`;
+
+    // 占位空格
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      const blank = document.createElement("div");
+      calendar.appendChild(blank);
     }
 
-    function checkToday() {
-      const today = new Date();
-      const monthDay = `${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      const todayStr = formatDate(today);
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      const dateObj = new Date(year, month, i);
+      const div = document.createElement("div");
+      const key = `${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      div.className = "day";
 
-      document.getElementById("today").innerHTML = `今天是：<span class="highlight">${todayStr}</span>`;
-
-      if (specialDates[monthDay]) {
-        document.getElementById("specialDays").innerHTML = `🎉 今天是 <span class="highlight">${specialDates[monthDay]}</span>！`;
-      } else {
-        document.getElementById("specialDays").innerHTML = "今天不是特殊节日哦～";
+      // 高亮今天
+      if (
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        div.classList.add("today");
       }
 
-      // 恋爱天数计算
-      const loveDays = Math.floor((today - startLoveDate) / (1000 * 60 * 60 * 24));
-      document.getElementById("loveAnniversary").innerHTML = `我们已经在一起 <span class="highlight">${loveDays}</span> 天了 💗`;
+      // 标记节日
+      if (festivalMap[key]) {
+        div.classList.add("special");
+        div.title = festivalMap[key];
+      }
 
-      // 姨妈期推算
-      const daysSinceLastPeriod = Math.floor((today - periodStartDate) / (1000 * 60 * 60 * 24));
-      const daysUntilNextPeriod = periodCycle - (daysSinceLastPeriod % periodCycle);
-      const nextPeriodDate = new Date(today.getTime() + daysUntilNextPeriod * 86400000);
-      document.getElementById("nextPeriod").innerHTML = `预计下次姨妈是：<span class="highlight">${formatDate(nextPeriodDate)}</span>`;
+      // 点开记录
+      div.innerHTML = `${i}`;
+      const note = localStorage.getItem(`note-${year}-${key}`);
+      if (note) {
+        const dot = document.createElement("span");
+        dot.className = "note-dot";
+        div.appendChild(dot);
+      }
+
+      div.onclick = () => {
+        const note = prompt(`写下你对 ${month + 1}月${i}日 的小记吧～`);
+        if (note !== null) {
+          localStorage.setItem(`note-${year}-${key}`, note);
+          alert("宝贝记录好了 ♡");
+          location.reload();
+        }
+      };
+
+      calendar.appendChild(div);
     }
 
-    checkToday();
+    // 在一起纪念日（在今天下方弹窗提示）
+    const loveDays = Math.floor((today - loveStartDate) / (1000 * 60 * 60 * 24));
+    const msg = document.createElement("div");
+    msg.style.textAlign = "center";
+    msg.style.padding = "10px";
+    msg.innerHTML = `💗 我们已经在一起 <strong>${loveDays}</strong> 天啦~`;
+
+    // 下次姨妈预测
+    const daysSinceLast = Math.floor((today - periodStartDate) / (1000 * 60 * 60 * 24));
+    const nextPeriodIn = periodCycle - (daysSinceLast % periodCycle);
+    const nextPeriodDate = new Date(today.getTime() + nextPeriodIn * 86400000);
+    msg.innerHTML += `<br>🩸 宝贝下次姨妈预计在：<strong>${nextPeriodDate.toLocaleDateString()}</strong>`;
+
+    document.body.appendChild(msg);
   </script>
 </body>
 </html>
