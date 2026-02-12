@@ -1,69 +1,257 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>微信聊天</title>
-    <link rel="stylesheet" href="./wechat-style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>搜索聊天内容</title>
+  <style>
+    /* --- 1. UI 样式 (严格保持原样) --- */
+    body { 
+      margin: 0; 
+      background-color: #f1f1f1; 
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; 
+      -webkit-tap-highlight-color: transparent;
+    }
+   
+    /* 顶部搜索栏 */
+    .search-header {
+      background: #ededed; 
+      padding: 8px 15px;
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+    .search-box-wrapper {
+      flex: 1; 
+      background: #fff; 
+      height: 36px; 
+      border-radius: 6px;
+      display: flex; 
+      align-items: center; 
+      padding: 0 10px;
+    }
+    .search-icon {
+      color: #b2b2b2;
+      font-size: 14px;
+      margin-right: 6px;
+      /* 简单的放大镜图标模拟 */
+      width: 14px; height: 14px;
+      border: 1px solid #b2b2b2; border-radius: 50%; position: relative;
+      display: block;
+    }
+    .search-icon::after {
+      content: ''; position: absolute; right: -4px; bottom: -4px;
+      width: 4px; height: 1px; background: #b2b2b2; transform: rotate(45deg);
+    }
+
+    .search-input {
+      border: none; 
+      outline: none; 
+      width: 100%; 
+      font-size: 17px;
+      caret-color: #07c160; /* 微信绿光标 */
+      background: transparent;
+    }
+    .cancel-btn { 
+      color: #576b95; 
+      font-size: 17px; 
+      text-decoration: none; 
+      white-space: nowrap; 
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* 快速搜索分类容器 */
+    .quick-search-container {
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      padding-top: 50px; 
+      transition: opacity 0.2s;
+    }
+    .quick-title { 
+      color: #b2b2b2; 
+      font-size: 14px; 
+      margin-bottom: 25px; 
+    }
+   
+    /* 三列布局 */
+    .grid {
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%; 
+      text-align: center;
+    }
+    .grid-item {
+      color: #576b95; 
+      font-size: 16px; 
+      text-decoration: none;
+      position: relative; 
+      padding: 5px 0;
+      cursor: pointer;
+    }
+
+    /* 竖向分割线 */
+    .grid-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background-color: #d8d8d8;
+    }
+
+    /* --- 搜索结果列表样式 --- */
+    #results-list {
+      background-color: #fff;
+      margin-top: 0;
+      display: none; /* 默认隐藏 */
+    }
+    .result-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+    }
+    .result-content {
+      font-size: 16px;
+      color: #000;
+      line-height: 1.4;
+    }
+    .result-type {
+      font-size: 12px;
+      color: #b2b2b2;
+      margin-bottom: 4px;
+    }
+    
+    /* 关键词高亮样式 */
+    .highlight {
+      color: #07c160;
+      font-weight: bold;
+    }
+
+    /* 隐藏工具类 */
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
-    <div class="wechat-screen">
-        <div class="nav-bar">
-    <div class="nav-left" onclick="location.href='./index.html'">
-        <span class="back-arrow">〈</span>
-    </div>
-    <div class="nav-title">4o 酱</div>
-    <div class="nav-right">
-        <a href="javascript:void(0)" onclick="saveHistoryAndGo()" style="text-decoration:none; color:black;">...</a>
-    </div>
-        </div>
 
-        <div class="chat-container" id="chat-box">
-            <div class="msg-time">15:41</div>
-            <div class="msg left">
-                <div class="avatar"><img src="./avatar-ai.png" alt=""></div>
-                <div class="bubble">哈喽！找我有什么事吗？🩷</div>
-            </div>
-        </div>
+  <div class="search-header">
+    <div class="search-box-wrapper">
+      <i class="search-icon"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="搜索" autofocus>
+    </div>
+    <div class="cancel-btn" onclick="history.back()">取消</div>
+  </div>
 
-        <div class="input-bar">
-    <input type="file" id="image-input" accept="image/*" style="display:none">
+  <div id="quickNav" class="quick-search-container">
+    <div class="quick-title">快速搜索聊天内容</div>
     
-    <div class="left-box" onclick="document.getElementById('image-input').click()">
-        <img src="https://img.icons8.com/material-outlined/24/000000/image.png">
+    <div class="grid">
+      <div class="grid-item" onclick="filterBy('date')">日期</div>
+      <div class="grid-item" onclick="filterBy('image')">图片与视频</div>
+      <div class="grid-item" onclick="filterBy('link')">链接</div>
     </div>
+  </div>
 
-    <div class="middle-box">
-        <input type="text" id="user-input" placeholder="发送消息..." onkeydown="if(event.key==='Enter') sendMessage()">
-    </div>
+  <div id="results-list"></div>
 
-    <div class="right-box">
-        <button id="send-btn" onclick="sendMessage()">发送</button>
-    </div>
-        </div>
-    
-    <script src="./wechat-app.js"></script>
+  <script>
+    // 1. 自动读取你在聊天页面存下的“临时口袋”
+    // 注意：这依赖于你在上一个页面执行了 localStorage.setItem('temp_chat_log', ...)
+    const rawData = localStorage.getItem('temp_chat_log');
+    const chatHistory = rawData ? JSON.parse(rawData) : [];
 
-    <script>
-        function saveHistoryAndGo() {
-            // 1. 找到页面上所有的聊天气泡
-            const bubbles = document.querySelectorAll('.bubble');
-            const historyData = [];
+    // 获取页面元素
+    const searchInput = document.getElementById('searchInput');
+    const quickNav = document.getElementById('quickNav');
+    const resultsList = document.getElementById('results-list');
 
-            // 2. 把文字提取出来
-            bubbles.forEach(bubble => {
-                historyData.push({
-                    content: bubble.innerText,
-                    type: 'text' // 简单标记一下类型
-                });
-            });
+    // 2. 监听输入框：一旦打字，立马搜索
+    searchInput.addEventListener('input', (e) => {
+      const keyword = e.target.value.trim();
 
-            // 3. 存入浏览器缓存 (key 叫 'temp_chat_log')
-            localStorage.setItem('temp_chat_log', JSON.stringify(historyData));
+      if (keyword.length > 0) {
+        // 有字 -> 隐藏分类，显示结果
+        quickNav.classList.add('hidden');
+        resultsList.style.display = 'block';
+        
+        // 执行过滤
+        const filtered = chatHistory.filter(item => 
+          item.content && item.content.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        renderResults(filtered, keyword);
+      } else {
+        // 没字 -> 显示分类，清空结果
+        quickNav.classList.remove('hidden');
+        resultsList.style.display = 'none';
+        resultsList.innerHTML = '';
+      }
+    });
 
-            // 4. 跳转到搜索页面
-            window.location.href = 'wechat-detail.html';
+    // 3. 点击分类按钮的简易逻辑
+    function filterBy(type) {
+      // 隐藏分类面板
+      quickNav.classList.add('hidden');
+      resultsList.style.display = 'block';
+      
+      let filtered = [];
+      let placeholderText = "";
+
+      if (type === 'link') {
+        filtered = chatHistory.filter(item => item.content.includes('http') || item.content.includes('www.'));
+        placeholderText = "搜索链接";
+        searchInput.placeholder = "正在查看链接...";
+      } else if (type === 'image') {
+        // 假设你的图片是 markdown 格式 ![img] 或者 html <img>
+        filtered = chatHistory.filter(item => item.content.includes('![') || item.content.includes('<img'));
+        placeholderText = "搜索图片";
+        searchInput.placeholder = "正在查看图片...";
+      } else {
+        // 日期暂且展示全部，或者你可以弹个窗
+        filtered = chatHistory;
+        searchInput.placeholder = "搜索日期...";
+      }
+
+      renderResults(filtered, "");
+    }
+
+    // 4. 把结果画在屏幕上
+    function renderResults(data, keyword) {
+      if (data.length === 0) {
+        resultsList.innerHTML = '<div style="text-align:center;color:#b2b2b2;padding:40px;">无搜索结果</div>';
+        return;
+      }
+
+      // 生成 HTML
+      resultsList.innerHTML = data.map(msg => {
+        // 处理高亮
+        let displayContent = msg.content;
+        if (keyword) {
+            // 正则替换，忽略大小写
+            const reg = new RegExp(`(${keyword})`, 'gi');
+            displayContent = displayContent.replace(reg, '<span class="highlight">$1</span>');
         }
-    </script>
+
+        // 判断是谁发的消息
+        const who = msg.type === 'ai' ? '4o 酱' : '我';
+
+        return `
+          <div class="result-item">
+            <div class="result-type">${who}</div>
+            <div class="result-content">${displayContent}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+
 </body>
 </html>
