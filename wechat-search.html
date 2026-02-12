@@ -5,112 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>搜索聊天内容</title>
   <style>
-    body { margin: 0; background-color: #f1f1f1; font-family: -apple-system, sans-serif; }
-    
-    /* 顶部搜索栏 */
+    /* 基础样式还原 */
+    body { 
+      margin: 0; 
+      background-color: #f1f1f1; 
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; 
+    }
+   
+    /* 顶部搜索栏 - 严格还原第一张图 */
     .search-header {
-      background: #ededed; padding: 10px 15px;
-      display: flex; align-items: center; gap: 10px;
+      background: #ededed; 
+      padding: 8px 15px;
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
     }
     .search-box-wrapper {
-      flex: 1; background: #fff; height: 36px; border-radius: 6px;
-      display: flex; align-items: center; padding: 0 10px;
+      flex: 1; 
+      background: #fff; 
+      height: 36px; 
+      border-radius: 6px;
+      display: flex; 
+      align-items: center; 
+      padding: 0 10px;
     }
-    .search-icon { color: #b2b2b2; font-size: 14px; margin-right: 8px; }
     .search-input {
-      border: none; outline: none; width: 100%; font-size: 16px;
+      border: none; 
+      outline: none; 
+      width: 100%; 
+      font-size: 17px;
+      caret-color: #07c160; /* 微信绿光标 */
     }
-    .cancel-btn { color: #576b95; font-size: 16px; text-decoration: none; white-space: nowrap; }
+    .cancel-btn { 
+      color: #576b95; 
+      font-size: 17px; 
+      text-decoration: none; 
+      white-space: nowrap; 
+      font-weight: 500;
+    }
 
-    /* 快速搜索分类 */
+    /* 快速搜索分类容器 */
     .quick-search-container {
-      display: flex; flex-direction: column; align-items: center;
-      padding-top: 60px;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      padding-top: 50px; /* 调整上方间距 */
     }
-    .quick-title { color: #b2b2b2; font-size: 14px; margin-bottom: 30px; }
-    
+    .quick-title { 
+      color: #b2b2b2; 
+      font-size: 14px; 
+      margin-bottom: 25px; 
+    }
+   
+    /* 三列布局 */
     .grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      width: 90%; text-align: center; gap: 30px 0;
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%; 
+      text-align: center;
     }
     .grid-item {
-      color: #576b95; font-size: 16px; text-decoration: none;
-      border-right: 0.5px solid #d8d8d8;
+      color: #576b95; 
+      font-size: 16px; 
+      text-decoration: none;
+      position: relative; /* 用于定位分割线 */
+      padding: 5px 0;
     }
-    .grid-item:nth-child(3n) { border-right: none; }
 
-    /* 搜索结果区域 */
-    #results {
-      background: #fff; margin-top: 10px; display: none;
+    /* 关键：使用伪元素制作竖向分割线，效果比border更精致 */
+    .grid-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background-color: #d8d8d8;
     }
-    .res-item {
-      padding: 12px 15px; border-bottom: 0.5px solid #e5e5e5;
-      display: flex; flex-direction: column; gap: 4px;
+
+    /* 点击反馈（可选，增加原生感） */
+    .grid-item:active {
+      opacity: 0.5;
     }
-    .res-meta { font-size: 12px; color: #b2b2b2; }
-    .res-text { font-size: 15px; color: #000; }
   </style>
 </head>
 <body>
 
   <div class="search-header">
     <div class="search-box-wrapper">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" placeholder="搜索" id="keyword" oninput="doSearch()">
+      <input type="text" class="search-input" placeholder="搜索" autofocus>
     </div>
-    <a href="wechat-detail.html" class="cancel-btn">取消</a>
+    <a href="javascript:history.back();" class="cancel-btn">取消</a>
   </div>
 
-  <div id="quick-panel" class="quick-search-container">
+  <div class="quick-search-container">
     <div class="quick-title">快速搜索聊天内容</div>
+    
     <div class="grid">
-      <div class="grid-item" onclick="filterBy('date')">日期</div>
-      <div class="grid-item" onclick="filterBy('image')">图片与视频</div>
-      <div class="grid-item" onclick="alert('暂无相关链接')">链接</div>
+      <a href="#" class="grid-item">日期</a>
+      <a href="#" class="grid-item">图片与视频</a>
+      <a href="#" class="grid-item">链接</a>
     </div>
   </div>
 
-  <div id="results"></div>
-
-  <script>
-    const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
-
-    function doSearch() {
-      const q = document.getElementById('keyword').value.trim();
-      const panel = document.getElementById('quick-panel');
-      const resBox = document.getElementById('results');
-
-      if (!q) {
-        panel.style.display = 'flex';
-        resBox.style.display = 'none';
-        return;
-      }
-
-      panel.style.display = 'none';
-      resBox.style.display = 'block';
-
-      const matched = history.filter(item => item.content && item.content.includes(q));
-      
-      if (matched.length > 0) {
-        resBox.innerHTML = matched.map(m => `
-          <div class="res-item">
-            <div class="res-meta">${m.role === 'user' ? '我' : '4o酱'}</div>
-            <div class="res-text">${m.content.replace(q, `<span style="color:#07C160">${q}</span>`)}</div>
-          </div>
-        `).join('');
-      } else {
-        resBox.innerHTML = '<div style="padding:40px; text-align:center; color:#b2b2b2;">无搜索结果</div>';
-      }
-    }
-
-    function filterBy(type) {
-      if(type === 'image') {
-        const imgs = history.filter(item => item.content && item.content.includes('data:image'));
-        alert(`共发现 ${imgs.length} 张聊天图片`);
-      } else {
-        alert("正在按日期整理记忆...");
-      }
-    }
-  </script>
 </body>
 </html>
+    
