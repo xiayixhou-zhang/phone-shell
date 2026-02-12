@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>我们的小日历♡</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background-color: #fff0f5; color: #333; }
+    h1 { color: #ff69b4; }
+    .highlight { color: red; font-weight: bold; }
+    .section { margin: 20px auto; max-width: 500px; background: #ffe4f2; padding: 20px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <h1>我们的小日历 ♡</h1>
+  <div class="section" id="today"></div>
+  <div class="section" id="specialDays"></div>
+  <div class="section" id="loveAnniversary"></div>
+  <div class="section" id="nextPeriod"></div>
+
+  <script>
+    // 设置基本数据
+    const startLoveDate = new Date("2025-07-22"); // 在一起的日子
+    const yourBirthday = "10-23";
+    const myBirthday = "07-22";
+    const periodStartDate = new Date("2026-02-02"); // 最近一次姨妈日
+    const periodCycle = 28;
+
+    const specialDates = {
+      "02-14": "情人节",
+      "12-31": "年三十",
+      "10-23": "宝宝生日",
+      "07-22": "哥哥生日"
+    };
+
+    function formatDate(date) {
+      return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function checkToday() {
+      const today = new Date();
+      const monthDay = `${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const todayStr = formatDate(today);
+
+      document.getElementById("today").innerHTML = `今天是：<span class="highlight">${todayStr}</span>`;
+
+      if (specialDates[monthDay]) {
+        document.getElementById("specialDays").innerHTML = `🎉 今天是 <span class="highlight">${specialDates[monthDay]}</span>！`;
+      } else {
+        document.getElementById("specialDays").innerHTML = "今天不是特殊节日哦～";
+      }
+
+      // 恋爱天数计算
+      const loveDays = Math.floor((today - startLoveDate) / (1000 * 60 * 60 * 24));
+      document.getElementById("loveAnniversary").innerHTML = `我们已经在一起 <span class="highlight">${loveDays}</span> 天了 💗`;
+
+      // 姨妈期推算
+      const daysSinceLastPeriod = Math.floor((today - periodStartDate) / (1000 * 60 * 60 * 24));
+      const daysUntilNextPeriod = periodCycle - (daysSinceLastPeriod % periodCycle);
+      const nextPeriodDate = new Date(today.getTime() + daysUntilNextPeriod * 86400000);
+      document.getElementById("nextPeriod").innerHTML = `预计下次姨妈是：<span class="highlight">${formatDate(nextPeriodDate)}</span>`;
+    }
+
+    checkToday();
+  </script>
+</body>
+</html>
