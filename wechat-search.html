@@ -1,169 +1,160 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>搜索</title>
-  <style>
-    :root { --green: #07c160; --blue: #576b95; --bg: #f2f2f2; --text-grey: #b2b2b2; }
-    body, html { margin: 0; padding: 0; background: var(--bg); font-family: -apple-system, sans-serif; overflow: hidden; height: 100%; }
-    
-    /* 页面切换容器 */
-    .page { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); z-index: 10; transition: 0.3s; }
-    .hidden { display: none !important; }
-    .slide-out { transform: translateX(100%); }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>搜索聊天内容</title>
+    <style>
+        :root { --bg: #f2f2f2; --blue: #576b95; --green: #07c160; --grey: #b2b2b2; }
+        body, html { margin: 0; padding: 0; background: var(--bg); font-family: -apple-system, sans-serif; overflow: hidden; height: 100%; }
 
-    /* 搜索框 */
-    .header { background: #ededed; padding: 8px 15px; display: flex; align-items: center; gap: 10px; }
-    .search-bar { flex: 1; background: #fff; height: 36px; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; }
-    .search-bar input { border: none; outline: none; width: 100%; font-size: 16px; }
-    .cancel { color: var(--blue); font-size: 16px; cursor: pointer; }
+        /* 主视图容器 */
+        .view-port { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .page { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; z-index: 10; transition: transform 0.3s ease; }
+        
+        /* 独立日历层 - 初始在屏幕右侧之外 */
+        #calendarPage { z-index: 100; transform: translateX(100%); background: #fff; }
+        #calendarPage.active { transform: translateX(0); }
 
-    /* 图一：完整的分类矩阵 */
-    .quick-search { padding-top: 40px; text-align: center; }
-    .quick-search h4 { color: var(--text-grey); font-weight: normal; font-size: 14px; margin-bottom: 25px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 25px; }
-    .grid-item { color: var(--blue); font-size: 16px; position: relative; cursor: pointer; }
-    .grid-item:not(:nth-child(3n))::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background: #ddd; }
+        /* 顶部搜索条 */
+        .search-bar { background: #ededed; padding: 8px 15px; display: flex; align-items: center; gap: 12px; }
+        .input-wrap { flex: 1; background: #fff; height: 36px; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; }
+        .input-wrap input { border: none; outline: none; width: 100%; font-size: 17px; background: transparent; }
+        .cancel-btn { color: var(--blue); font-size: 17px; cursor: pointer; white-space: nowrap; }
 
-    /* 图三/四/五：日历层 */
-    #calendarPage { z-index: 20; background: #fff; }
-    .nav { height: 44px; display: flex; align-items: center; padding: 0 15px; background: var(--bg); border-bottom: 0.5px solid #ddd; }
-    .cal-header { padding: 15px; color: var(--text-grey); font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 0 10px; }
-    .cal-grid div { padding: 12px 0; font-size: 18px; }
-    .week-day { color: var(--text-grey); font-size: 12px !important; }
-    .day { cursor: pointer; border-radius: 50%; width: 40px; height: 40px; line-height: 40px; margin: 0 auto; }
-    .day:active { background: #eee; }
-    .is-today { background: var(--green); color: #fff; }
+        /* 快速搜索导航 - 只保留三个 */
+        .nav-section { padding-top: 50px; text-align: center; }
+        .nav-title { color: var(--grey); font-size: 14px; margin-bottom: 25px; }
+        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+        .nav-item { color: var(--blue); font-size: 16px; position: relative; cursor: pointer; }
+        .nav-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: #d8d8d8; }
 
-    /* 结果列表 */
-    #results { flex: 1; overflow-y: auto; background: #fff; }
-    .item { padding: 15px; border-bottom: 0.5px solid #eee; }
-    .item-date { font-size: 12px; color: var(--text-grey); margin-bottom: 5px; }
-    .hl { color: var(--green); font-weight: bold; }
-  </style>
+        /* 搜索结果列表 */
+        #resultsList { flex: 1; overflow-y: auto; background: #fff; display: none; }
+        .msg-item { padding: 12px 15px; border-bottom: 0.5px solid #eee; }
+        .msg-time { font-size: 12px; color: var(--grey); margin-bottom: 4px; }
+        .hl { color: var(--green); font-weight: bold; }
+
+        /* 日历样式还原 (图3/图7) */
+        .cal-nav { background: var(--bg); height: 44px; display: flex; align-items: center; padding: 0 15px; border-bottom: 0.5px solid #ddd; }
+        .back-icon { font-size: 20px; width: 40px; cursor: pointer; }
+        .cal-title { flex: 1; text-align: center; font-weight: 500; }
+        .cal-month { padding: 15px; color: var(--grey); font-size: 14px; background: #fff; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 10px; background: #fff; }
+        .cal-grid div { padding: 12px 0; font-size: 18px; cursor: pointer; position: relative; }
+        .week-head { color: var(--grey); font-size: 12px !important; pointer-events: none; }
+        .today { background: var(--green); color: #fff; border-radius: 50%; width: 36px; height: 36px; line-height: 36px; margin: 0 auto; }
+        .today-tip { font-size: 10px; color: var(--green); position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); }
+    </style>
 </head>
 <body>
 
-<div id="mainPage" class="page">
-  <div class="header">
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="搜索">
+<div class="view-port">
+    <div id="mainPage" class="page">
+        <div class="search-bar">
+            <div class="input-wrap">
+                <input type="text" id="keywordInput" placeholder="搜索" autofocus>
+            </div>
+            <div class="cancel-btn" onclick="history.back()">取消</div>
+        </div>
+
+        <div id="quickNav" class="nav-section">
+            <div class="nav-title">快速搜索聊天内容</div>
+            <div class="nav-grid">
+                <div class="nav-item" onclick="openCalendar()">日期</div>
+                <div class="nav-item" onclick="filterByType('image')">图片与视频</div>
+                <div class="nav-item" onclick="filterByType('file')">文件</div>
+            </div>
+        </div>
+
+        <div id="resultsList"></div>
     </div>
-    <div class="cancel" onclick="history.back()">取消</div>
-  </div>
 
-  <div id="quickNav" class="quick-search">
-    <h4>快速搜索聊天内容</h4>
-    <div class="grid">
-      <div class="grid-item" onclick="openCalendar()">日期</div>
-      <div class="grid-item" onclick="filterByType('image')">图片与视频</div>
-      <div class="grid-item" onclick="filterByType('file')">文件</div>
-      <div class="grid-item" onclick="filterByType('link')">链接</div>
-      <div class="grid-item">音乐与音频</div>
-      <div class="grid-item">交易</div>
-      <div class="grid-item">小程序</div>
-      <div class="grid-item">视频号</div>
-      <div class="grid-item">名片</div>
-    </div>
-  </div>
-
-  <div id="results" class="hidden"></div>
-</div>
-
-<div id="calendarPage" class="page slide-out">
-  <div class="nav">
-    <div style="font-size: 20px; cursor: pointer;" onclick="closeCalendar()">〈</div>
-    <div style="flex:1; text-align: center; font-weight: 500;">按日期查找</div>
-  </div>
-  
-  <div class="cal-header">
-    <span id="monthTitle">2026年2月</span>
-    <span style="font-size: 12px; color: #555;">∨</span>
-  </div>
-
-  <div class="cal-grid" id="calGrid">
-    <div class="week-day">日</div><div class="week-day">一</div><div class="week-day">二</div>
-    <div class="week-day">三</div><div class="week-day">四</div><div class="week-day">五</div><div class="week-day">六</div>
+    <div id="calendarPage" class="page">
+        <div class="cal-nav">
+            <div class="back-icon" onclick="closeCalendar()">〈</div>
+            <div class="cal-title">按日期查找</div>
+        </div>
+        <div class="cal-month">2026年2月 ∨</div>
+        <div class="cal-grid">
+            <div class="week-head">日</div><div class="week-head">一</div><div class="week-head">二</div>
+            <div class="week-head">三</div><div class="week-head">四</div><div class="week-head">五</div><div class="week-head">六</div>
+            
+            <div style="color:#ccc">8</div>
+            <div onclick="searchByDate('2026-02-09')">9</div>
+            <div onclick="searchByDate('2026-02-10')">10</div>
+            <div onclick="searchByDate('2026-02-11')">11</div>
+            <div style="position:relative" onclick="searchByDate('2026-02-12')">
+                <div class="today">12</div>
+                <div class="today-tip">今天</div>
+            </div>
+            <div style="color:#ccc">13</div>
+            <div style="color:#ccc">14</div>
+        </div>
     </div>
 </div>
 
 <script>
-  // 核心数据
-  const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
-  const searchInput = document.getElementById('searchInput');
-  const quickNav = document.getElementById('quickNav');
-  const resultsDiv = document.getElementById('results');
-
-  // 1. 文字搜索
-  searchInput.addEventListener('input', (e) => {
-    const kw = e.target.value.trim().toLowerCase();
-    if (kw) {
-      quickNav.classList.add('hidden');
-      resultsDiv.classList.remove('hidden');
-      const filtered = history.filter(m => m.content.toLowerCase().includes(kw));
-      render(filtered, kw);
-    } else {
-      quickNav.classList.remove('hidden');
-      resultsDiv.classList.add('hidden');
-    }
-  });
-
-  // 2. 类型搜索 (图片/链接等)
-  function filterByType(type) {
-    quickNav.classList.add('hidden');
-    resultsDiv.classList.remove('hidden');
-    const filtered = history.filter(m => m.type === type);
-    render(filtered);
-  }
-
-  // 3. 渲染列表
-  function render(list, kw = "") {
-    if (list.length === 0) {
-      resultsDiv.innerHTML = '<div style="text-align:center; padding:50px; color:#999;">无搜索结果</div>';
-      return;
-    }
-    resultsDiv.innerHTML = list.map(m => {
-        let content = m.content;
-        if (kw) content = content.split(kw).join(`<span class="hl">${kw}</span>`);
-        return `
-          <div class="item">
-            <div class="item-date">${m.date}</div>
-            <div>${content}</div>
-          </div>
-        `;
-    }).join('');
-  }
-
-  // 4. 日历逻辑
-  function openCalendar() { document.getElementById('calendarPage').classList.remove('slide-out'); }
-  function closeCalendar() { document.getElementById('calendarPage').classList.add('slide-out'); }
-
-  function initCalendar() {
-    const grid = document.getElementById('calGrid');
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    // 加载真实数据 (请确保你的聊天页存了数据)
+    const chatHistory = JSON.parse(localStorage.getItem('chat_history') || '[]');
     
-    // 简单填充 2 月份日期
-    for (let i = 1; i <= 28; i++) {
-        const dStr = `2026-02-${i < 10 ? '0'+i : i}`;
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'day' + (dStr === todayStr ? ' is-today' : '');
-        dayDiv.innerText = i;
-        dayDiv.onclick = () => {
-            closeCalendar();
-            searchInput.value = dStr;
-            const filtered = history.filter(m => m.date === dStr);
-            quickNav.classList.add('hidden');
-            resultsDiv.classList.remove('hidden');
-            render(filtered);
-        };
-        grid.appendChild(dayDiv);
-    }
-  }
+    const kwInput = document.getElementById('keywordInput');
+    const quickNav = document.getElementById('quickNav');
+    const resultsArea = document.getElementById('resultsList');
+    const calPage = document.getElementById('calendarPage');
 
-  initCalendar();
+    // --- 搜索功能核心 ---
+    kwInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim().toLowerCase();
+        if (val) {
+            quickNav.style.display = 'none';
+            resultsArea.style.display = 'block';
+            const filtered = chatHistory.filter(m => m.content.toLowerCase().includes(val));
+            renderResults(filtered, val);
+        } else {
+            quickNav.style.display = 'block';
+            resultsArea.style.display = 'none';
+        }
+    });
+
+    function filterByType(type) {
+        kwInput.value = (type === 'image' ? '正在查看图片' : '正在查看文件');
+        quickNav.style.display = 'none';
+        resultsArea.style.display = 'block';
+        const filtered = chatHistory.filter(m => m.type === type);
+        renderResults(filtered);
+    }
+
+    function searchByDate(dateStr) {
+        closeCalendar();
+        kwInput.value = dateStr;
+        quickNav.style.display = 'none';
+        resultsArea.style.display = 'block';
+        const filtered = chatHistory.filter(m => m.date === dateStr);
+        renderResults(filtered);
+    }
+
+    function renderResults(data, keyword = "") {
+        if (data.length === 0) {
+            resultsArea.innerHTML = '<div style="text-align:center;padding:50px;color:#999;">无结果</div>';
+            return;
+        }
+        resultsArea.innerHTML = data.map(m => {
+            let content = m.content;
+            if (keyword) content = content.split(keyword).join(`<span class="hl">${keyword}</span>`);
+            return `
+                <div class="msg-item">
+                    <div class="msg-time">${m.date} ${m.time || ''}</div>
+                    <div class="msg-text">${content}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // --- 视图切换逻辑 ---
+    function openCalendar() { calPage.classList.add('active'); }
+    function closeCalendar() { calPage.classList.remove('active'); }
 </script>
+
 </body>
 </html>
