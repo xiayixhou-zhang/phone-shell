@@ -1,3 +1,28 @@
+const gregorianFestivals = {
+  "1-1": "元旦节",
+  "2-14": "情人节",
+  "3-8": "妇女节",
+  "5-1": "劳动节",
+  "6-1": "儿童节",
+  "10-1": "国庆节",
+  "12-25": "圣诞节",
+};
+
+const lunarFestivals = {
+  "1-1": "春节",
+  "1-15": "元宵节",
+  "5-5": "端午节",
+  "7-7": "七夕节",
+  "8-15": "中秋节",
+  "9-9": "重阳节",
+  "12-30": "除夕", // 可被替换为农历当年最后一天
+};
+
+const birthdayDates = {
+  "10-23": "宝宝生日",
+  "7-22": "哥哥生日"
+};
+
 let currentDate = new Date();
 let lastPeriod = localStorage.getItem("lastPeriod") || "";
 
