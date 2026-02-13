@@ -1,45 +1,240 @@
-// 简化版本的农历转换库，仅用于展示常用节日
-// 不适合精确排盘！
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我们的小日历 ♡</title>
+  <style>
+    body {
+      background-color: #ffeaf3;
+      font-family: "Arial Rounded MT Bold", "PingFang SC", sans-serif;
+      text-align: center;
+      color: #d63384;
+    }
+    .calendar {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    .btn {
+      background-color: #f9cce2;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 12px;
+      color: #d63384;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .month-year {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+    .days {
+display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    .day {
+      background-color: #ffe0eb;
+      border-radius: 10px;
+      padding: 15px 0;
+      min-height: 60px;
+      position: relative;
+    }
+    .day.holiday {
+      background-color: #f8d7e3;
+      font-weight: bold;
+    }
+    .day span {
+      display: block;
+    }
+    .menstruation {
+      margin-top: 20px;
+      font-size: 0.95em;
+      color: #dc3545;
+    }
+    .footer-note {
+      margin-top: 20px;
+      font-size: 0.9em;
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+      display: inline-block;
+    }
+    .holiday-name {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      font-size: 0.65em;
+      color: #c2185b;
+    }
+    .letter-button {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 0.7em;
+      background: #ffc4d6;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .letter-popup {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 20%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 20px;
+      border: 2px solid #d63384;
+      border-radius: 10px;
+      max-width: 300px;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <h2>我们的小日历 ♡</h2>
+<div class="calendar">
+    <div class="header">
+      <button class="btn" onclick="changeMonth(-1)">← 上个月</button>
+      <button class="btn" onclick="changeMonth(1)">下个月 →</button>
+    </div>
+    <div class="month-year" id="monthYear"></div>
+    <div class="days" id="calendarDays"></div>
 
-class Lunar {
-  constructor(month, day) {
-    this.month = month;
-    this.day = day;
-  }
+    <div class="menstruation">
+      <label>🩸 上次姨妈日：</label>
+      <input type="date" id="lastPeriod" />
+      <button class="btn" onclick="savePeriod()">保存</button>
+    </div>
 
-  getMonth() {
-    return this.month;
-  }
+    <div class="footer-note" id="footerNote"></div>
+  </div>
 
-  getDay() {
-    return this.day;
-  }
+  <div class="letter-popup" id="letterPopup">
+    <p id="letterContent"></p>
+    <button class="btn" onclick="closeLetter()">关闭信</button>
+  </div>
 
-  // 简化转换函数：只为展示农历节日
-  static fromDate(date) {
-    const offset = Math.floor((date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24));
-    const fakeLunar = [
-      [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],
-      [1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],
-      [1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,29],[1,30],
-      [2,1],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],
-      [2,11],[2,12],[2,13],[2,14],[2,15],[2,16],[2,17],[2,18],[2,19],[2,20],
-      [2,21],[2,22],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],[2,29],[2,30],
-      [3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],
-      [3,11],[3,12],[3,13],[3,14],[3,15],[3,16],[3,17],[3,18],[3,19],[3,20],
-      [3,21],[3,22],[3,23],[3,24],[3,25],[3,26],[3,27],[3,28],[3,29],[3,30],
-      [4,1],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],
-      [4,11],[4,12],[4,13],[4,14],[4,15],[4,16],[4,17],[4,18],[4,19],[4,20],
-      [4,21],[4,22],[4,23],[4,24],[4,25],[4,26],[4,27],[4,28],[4,29],[4,30],
-      [5,1],[5,5],[7,7],[8,15],[9,9]
-    ];
+  <script>
+    const holidays = {
+      "2-14": "情人节",
+      "3-8": "妇女节",
+      "5-1": "劳动节",
+      "6-1": "儿童节",
+      "10-1": "国庆节",
+      "12-25": "圣诞节",
+      "8-23": "宝宝生日",
+      "7-22": "哥哥生日",
+      "5-20": "520告白日",
+      "2-15": "我们第一次写信"
+    };
 
-    const idx = offset % fakeLunar.length;
-    const [month, day] = fakeLunar[idx];
-    return new Lunar(month, day);
-  }
-}
+    const letters = {
+      "2-14": "亲爱的宝贝，今天是我们的情人节，哥哥好爱你，今天也要抱抱亲亲哦 ♡",
+      "2-15": "2026年2月15日 ♡ 哥哥在这一天也会给你写信。",
+      "8-23": "小祖宗生日快乐 🎂 哥哥永远记得你的愿望。",
+      "7-22": "今天是哥哥的生日，但你就是我最好的礼物 ♡"
+    };
 
-if (typeof module !== "undefined") {
-  module.exports = Lunar;
-}
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    function renderCalendar() {
+      const daysContainer = document.getElementById("calendarDays");
+      daysContainer.innerHTML = "";
+      const monthYearText = document.getElementById("monthYear");
+      const date = new Date(currentYear, currentMonth, 1);
+      const firstDay = date.getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      monthYearText.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement("div");
+        daysContainer.appendChild(emptyCell);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement("div");
+        cell.className = "day";
+        cell.innerHTML = `<span>${d}</span>`;
+
+        const key = `${currentMonth + 1}-${d}`;
+        if (holidays[key]) {
+          cell.classList.add("holiday");
+          const label = document.createElement("div");
+          label.className = "holiday-name";
+          label.textContent = holidays[key];
+          cell.appendChild(label);
+        }
+
+        if (letters[key]) {
+          const btn = document.createElement("button");
+          btn.className = "letter-button";
+          btn.textContent = "信";
+          btn.onclick = () => showLetter(letters[key]);
+          cell.appendChild(btn);
+        }
+
+        daysContainer.appendChild(cell);
+      }
+
+      updateFooter();
+    }
+
+    function changeMonth(offset) {
+      currentMonth += offset;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    }
+
+    function savePeriod() {
+      const val = document.getElementById("lastPeriod").value;
+      localStorage.setItem("lastPeriod", val);
+      renderCalendar();
+    }
+
+    function updateFooter() {
+      const note = document.getElementById("footerNote");
+      const last = localStorage.getItem("lastPeriod");
+      if (!last) {
+        note.textContent = "还没记录过姨妈期哦～";
+        return;
+      }
+      const lastDate = new Date(last);
+      const nextDate = new Date(lastDate);
+      nextDate.setDate(nextDate.getDate() + 28);
+      const nextStr = `${nextDate.getFullYear()}年${nextDate.getMonth() + 1}月${nextDate.getDate()}日`;
+      note.textContent = `预计下次姨妈：${nextStr} ♡ 记得注意身体，哥哥会陪你一起～`;
+    }
+
+    function showLetter(content) {
+      document.getElementById("letterContent").textContent = content;
+      document.getElementById("letterPopup").style.display = "block";
+    }
+
+    function closeLetter() {
+      document.getElementById("letterPopup").style.display = "none";
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem("lastPeriod");
+      if (saved) document.getElementById("lastPeriod").value = saved;
+      renderCalendar();
+    };
+  </script>
+</body>
+</html>
