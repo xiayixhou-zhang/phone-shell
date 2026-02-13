@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我们的小日历 ♡</title>
+
+<style>
+body{
+    margin:0;
+    font-family: "Helvetica Neue", sans-serif;
+    background:#fff0f5;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
+header{
+    text-align:center;
+    padding:20px;
+    font-size:22px;
+    color:#ff69b4;
+    font-weight:bold;
+}
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+button{
+    background:#ffb6c1;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    color:white;
+    font-weight:bold;
+}
+#monthTitle{
+    text-align:center;
+    font-size:18px;
+    margin-bottom:5px;
+}
+#calendar{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:3px;
+    padding:10px;
+}
+.day{
+    background:#ffe4f2;
+    border-radius:8px;
+    padding:6px;
+    font-size:13px;
+    position:relative;
+}
+.today{
+    border:2px solid hotpink;
+}
+.festival{
+    color:#d63384;
+    font-size:10px;
+}
+.period{
+    background:#ffd6e8;
+}
+#periodSet{
+    text-align:center;
+    padding:10px;
+}
+#letterBox{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin:10px;
+    font-size:14px;
+    min-height:40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>我们的小日历 ♡</header>
+
+<div class="controls">
+<button onclick="prevMonth()">← 上个月</button>
+<button onclick="nextMonth()">下个月 →</button>
+</div>
+
+<div id="monthTitle"></div>
+<div id="calendar"></div>
+
+<div id="periodSet">
+🩸 上次姨妈日：
+<input type="date" id="periodInput">
+<button onclick="savePeriod()">保存</button>
+</div>
+
+<div id="letterBox"></div>
+
+<script>
+
+// ======== 新历固定节日 ========
+const solarFestivals = {
+"01-01":"元旦",
+"02-14":"情人节",
+"03-08":"妇女节",
+"05-01":"劳动节",
+"06-01":"儿童节",
+"07-01":"建党节",
+"08-01":"建军节",
+"09-10":"教师节",
+"10-01":"国庆节",
+"11-11":"双十一",
+"12-24":"平安夜",
+"12-25":"圣诞节",
+"07-22":"哥哥生日 🎂",
+"10-23":"宝宝生日 🎂"
+};
+
+// ======== 农历节日 ========
+const lunarFestivals = {
+"01-01":"春节",
+"01-15":"元宵节",
+"05-05":"端午节",
+"07-07":"七夕",
+"08-15":"中秋节",
+"09-09":"重阳节"
+};
+
+// ======== 简易农历转换（支持1900-2100） ========
+const lunarInfo=[0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,
+0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,
+0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,
+0x06d40,0x1ab54,0x02b60,0x09570,0x052f2];
+
+function lunarToSolar(year,lMonth,lDay){
+let baseDate=new Date(1900,0,31);
+let offset=0;
+for(let i=1900;i<year;i++){offset+=lYearDays(i);}
+for(let i=1;i<lMonth;i++){offset+=monthDays(year,i);}
+offset+=lDay-1;
+return new Date(baseDate.getTime()+offset*86400000);
+}
+function lYearDays(y){
+let sum=348;
+for(let i=0x8000;i>0x8;i>>=1){sum+=(lunarInfo[y-1900]&i)?1:0;}
+return sum;
+}
+function monthDays(y,m){
+return (lunarInfo[y-1900]&(0x10000>>m))?30:29;
+}
+
+// ======== 核心逻辑 ========
+
+let currentDate=new Date();
+let periodStart=localStorage.getItem("period");
+
+function renderCalendar(){
+let year=currentDate.getFullYear();
+let month=currentDate.getMonth();
+document.getElementById("monthTitle").innerText=year+"年 "+(month+1)+"月";
+let firstDay=new Date(year,month,1).getDay();
+let lastDate=new Date(year,month+1,0).getDate();
+let cal=document.getElementById("calendar");
+cal.innerHTML="";
+
+for(let i=0;i<firstDay;i++){
+cal.innerHTML+="<div></div>";
+}
+
+for(let d=1;d<=lastDate;d++){
+let fullDate=new Date(year,month,d);
+let mmdd=(month+1).toString().padStart(2,'0')+"-"+d.toString().padStart(2,'0');
+let div=document.createElement("div");
+div.className="day";
+div.innerHTML="<div>"+d+"</div>";
+
+let today=new Date();
+if(d===today.getDate() && month===today.getMonth() && year===today.getFullYear()){
+div.classList.add("today");
+}
+
+// 新历节日
+if(solarFestivals[mmdd]){
+div.innerHTML+="<div class='festival'>"+solarFestivals[mmdd]+"</div>";
+}
+
+// 农历节日
+for(let key in lunarFestivals){
+let parts=key.split("-");
+let solarDate=lunarToSolar(year,parseInt(parts[0]),parseInt(parts[1]));
+if(solarDate.getMonth()===month && solarDate.getDate()===d){
+div.innerHTML+="<div class='festival'>"+lunarFestivals[key]+"</div>";
+}
+}
+
+// 姨妈期
+if(periodStart){
+let start=new Date(periodStart);
+let diff=Math.floor((fullDate-start)/86400000);
+if(diff>=0 && diff%28<5){
+div.classList.add("period");
+}
+}
+
+// 点击显示信
+div.onclick=function(){
+document.getElementById("letterBox").innerText=
+year+"年"+(month+1)+"月"+d+"日 ♡ 哥哥在这一天也会给你写信。";
+};
+
+cal.appendChild(div);
+}
+}
+
+function prevMonth(){
+currentDate.setMonth(currentDate.getMonth()-1);
+renderCalendar();
+}
+function nextMonth(){
+currentDate.setMonth(currentDate.getMonth()+1);
+renderCalendar();
+}
+function savePeriod(){
+let val=document.getElementById("periodInput").value;
+if(val){
+localStorage.setItem("period",val);
+periodStart=val;
+renderCalendar();
+}
+}
+
+renderCalendar();
+
+</script>
+</body>
+</html>
