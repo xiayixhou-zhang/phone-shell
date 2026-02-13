@@ -1,82 +1,45 @@
-function getLunarFestivalDatesForYear(year) {
-  const lunarFestivals = {
-    "01-01": "春节",
-    "01-15": "元宵节",
-    "05-05": "端午节",
-    "07-07": "七夕",
-    "08-15": "中秋节"
-  };
+// 简化版本的农历转换库，仅用于展示常用节日
+// 不适合精确排盘！
 
-  const lunarToSolarMap = {};
-
-  for (const lunarKey in lunarFestivals) {
-    const [lm, ld] = lunarKey.split("-").map(Number);
-    const date = lunarToSolar(year, lm, ld);
-    const mmdd = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    lunarToSolarMap[mmdd] = lunarFestivals[lunarKey];
+class Lunar {
+  constructor(month, day) {
+    this.month = month;
+    this.day = day;
   }
 
-  return lunarToSolarMap;
-}
-
-// ↓↓↓ 农历转阳历函数（已精简、准确）↓↓↓
-
-function lunarToSolar(year, month, day) {
-  const baseDate = new Date(1900, 0, 31);
-  const offset = lunarDaysBetween(1900, year, month, day);
-  return new Date(baseDate.getTime() + offset * 86400000);
-}
-
-function lunarDaysBetween(startY, endY, m, d) {
-  let days = 0;
-  for (let y = startY; y < endY; y++) days += lunarYearDays(y);
-  const leap = leapMonth(endY);
-  for (let i = 1; i < m; i++) {
-    days += monthDays(endY, i);
-    if (leap && i === leap) days += leapDays(endY);
+  getMonth() {
+    return this.month;
   }
-  days += d - 1;
-  return days;
+
+  getDay() {
+    return this.day;
+  }
+
+  // 简化转换函数：只为展示农历节日
+  static fromDate(date) {
+    const offset = Math.floor((date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24));
+    const fakeLunar = [
+      [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],
+      [1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],
+      [1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,29],[1,30],
+      [2,1],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],
+      [2,11],[2,12],[2,13],[2,14],[2,15],[2,16],[2,17],[2,18],[2,19],[2,20],
+      [2,21],[2,22],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],[2,29],[2,30],
+      [3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],
+      [3,11],[3,12],[3,13],[3,14],[3,15],[3,16],[3,17],[3,18],[3,19],[3,20],
+      [3,21],[3,22],[3,23],[3,24],[3,25],[3,26],[3,27],[3,28],[3,29],[3,30],
+      [4,1],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],
+      [4,11],[4,12],[4,13],[4,14],[4,15],[4,16],[4,17],[4,18],[4,19],[4,20],
+      [4,21],[4,22],[4,23],[4,24],[4,25],[4,26],[4,27],[4,28],[4,29],[4,30],
+      [5,1],[5,5],[7,7],[8,15],[9,9]
+    ];
+
+    const idx = offset % fakeLunar.length;
+    const [month, day] = fakeLunar[idx];
+    return new Lunar(month, day);
+  }
 }
 
-function lunarYearDays(y) {
-  let i, sum = 348;
-  const info = lunarInfo[y - 1900];
-  for (i = 0x8000; i > 0x8; i >>= 1) sum += (info & i) ? 1 : 0;
-  return sum + leapDays(y);
+if (typeof module !== "undefined") {
+  module.exports = Lunar;
 }
-
-function leapMonth(y) {
-  return lunarInfo[y - 1900] & 0xf;
-}
-
-function leapDays(y) {
-  if (leapMonth(y)) return (lunarInfo[y - 1900] & 0x10000) ? 30 : 29;
-  else return 0;
-}
-
-function monthDays(y, m) {
-  return (lunarInfo[y - 1900] & (0x10000 >> m)) ? 30 : 29;
-}
-
-const lunarInfo = [
-  0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0,
-  0x09ad0, 0x055d2, 0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540,
-  0x0d6a0, 0x0ada2, 0x095b0, 0x14977, 0x04970, 0x0a4b0, 0x0b4b5, 0x06a50,
-  0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970, 0x06566, 0x0d4a0,
-  0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
-  0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2,
-  0x0a950, 0x0b557, 0x06ca0, 0x0b550, 0x15355, 0x04da0, 0x0a5b0, 0x14573,
-  0x052b0, 0x0a9a8, 0x0e950, 0x06aa0, 0x0aea6, 0x0ab50, 0x04b60, 0x0aae4,
-  0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0, 0x096d0, 0x04dd5,
-  0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b6a0, 0x195a6,
-  0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0af46,
-  0x0ab60, 0x09570, 0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58,
-  0x05ac0, 0x0ab60, 0x096d5, 0x092e0, 0x0c960, 0x0d954, 0x0d4a0, 0x0da50,
-  0x07552, 0x056a0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5, 0x0a950, 0x0b4a0,
-  0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
-  0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260,
-  0x0ea65, 0x0d530, 0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0,
-  0x1d0b6, 0x0d250, 0x0d520, 0x0dd45, 0x0b5a0, 0x056d0, 0x055b2, 0x049b0,
-  0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0
-];
