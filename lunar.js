@@ -202,9 +202,10 @@ display: grid;
     }
 
     function savePeriod() {
-      const val = document.getElementById("lastPeriod").value;
-      localStorage.setItem("lastPeriod", val);
-      renderCalendar();
+  const val = document.getElementById("lastPeriod").value;
+  localStorage.setItem("lastPeriod", val);
+  updateFooter(); // ✅ 添加这行，保存后立即刷新底部推算
+  renderCalendar();
     }
 
     function updateFooter() {
