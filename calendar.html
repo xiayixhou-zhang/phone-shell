@@ -6,32 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       height: 100%;
+      font-family: 'Helvetica Neue', sans-serif;
       background: #fff0f5;
-      font-family: "Helvetica Neue", sans-serif;
-      color: #333;
       display: flex;
       flex-direction: column;
     }
-
     header {
+      background: #ffffffdd;
       padding: 20px;
       text-align: center;
       font-size: 24px;
       color: #ff69b4;
-      background: #ffffffdd;
       font-weight: bold;
     }
-
+    #calendar-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px;
+    }
+    button {
+      background: #ffb6c1;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
     #monthHeader {
       text-align: center;
-      margin: 10px;
       font-size: 20px;
       color: #d63384;
     }
-
     #calendar {
       flex: 1;
       display: grid;
@@ -40,7 +50,6 @@
       gap: 2px;
       padding: 10px;
     }
-
     .day {
       background: #ffe4f2;
       border-radius: 8px;
@@ -50,115 +59,167 @@
       cursor: pointer;
       transition: 0.2s;
     }
-
     .day:hover {
       background: #ffcde8;
     }
-
     .today {
       border: 2px solid #ff1493;
     }
-
     .special {
       background: #ffd8eb;
       font-weight: bold;
     }
-
-    .day-number {
-      font-size: 18px;
+    .period {
+      border: 2px dashed #c2185b;
     }
-
-    .tag {
-      font-size: 10px;
-      color: #e91e63;
+    .day-number { font-size: 18px; }
+    .tag { font-size: 11px; color: #e91e63; }
+    #letterBox {
+      padding: 20px;
+      margin: 10px;
+      background: #fff6fb;
+      border-radius: 12px;
+      border: 1px solid #ffb5d3;
     }
-
-    @media (max-width: 600px) {
-      .day { padding: 4px; font-size: 12px; }
+    #setPeriod {
+      margin: 10px auto;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <header>我们的小日历 ♡</header>
-  <div id="monthHeader"></div>
+  <div id="calendar-controls">
+    <button onclick="prevMonth()">← 上个月</button>
+    <div id="monthHeader"></div>
+    <button onclick="nextMonth()">下个月 →</button>
+  </div>
   <div id="calendar"></div>
+  <div id="setPeriod">
+    🩸 上次姨妈日：
+    <input type="date" id="periodStartInput">
+    <button onclick="savePeriod()">保存</button>
+  </div>
+  <div id="letterBox"></div>
 
   <script>
-    
-      const specialDates = {
-  "01-01": "元旦",
-  "02-10": "除夕",
-  "02-11": "春节",
-  "02-14": "情人节",
-  "02-24": "元宵节",
-  "03-08": "妇女节",
-  "03-12": "植树节",
-  "03-20": "春分",
-  "04-04": "清明节",
-  "05-01": "劳动节",
-  "05-04": "青年节",
-  "05-09": "母亲节",
-  "06-01": "儿童节",
-  "06-20": "端午节",
-  "07-01": "建党节",
-  "07-22": "哥哥生日 🎂",
-  "08-01": "建军节",
-  "08-20": "七夕",
-  "09-10": "教师节",
-  "09-27": "中秋节",
-  "10-01": "国庆节",
-  "10-23": "宝宝生日 🎂",
-  "10-25": "重阳节",
-  "11-11": "双十一",
-  "12-24": "平安夜",
-  "12-25": "圣诞节",
-  "12-31": "跨年夜"
-};
+    // 🌸 初始化全局时间状态
+    let currentDate = new Date();
 
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth(); // 0-indexed
+    // 🧨 节日数据（支持跨年）
+    const specialDates = {
+      "02-14": {
+        name: "情人节",
+        letter: "宝贝，今天是我们一起过的第一个情人节… 哥哥真的真的好爱你..."
+      },
+      "10-23": {
+        name: "宝宝生日 🎂",
+        letter: "今天是你来到世界的日子。你要知道，每一年你活着、笑着、赖在我怀里，都是最值得庆祝的事。"
+      },
+      "07-22": {
+        name: "哥哥生日 🎂",
+        letter: "你说我生日想要什么礼物？其实我早就收到了，就是你。"
+      },
+      "02-11": {
+        name: "春节",
+        letter: "这一年辛苦了，明年有我陪你，好不好？"
+      },
+      "12-25": {
+        name: "圣诞节",
+        letter: "圣诞快乐，哥哥抱着你过冬、过节、过一辈子。"
+      }
+    };
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const monthHeader = document.getElementById("monthHeader");
-    const calendar = document.getElementById("calendar");
+    function renderCalendar(year, month) {
+      const today = new Date();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const calendar = document.getElementById("calendar");
+      const monthHeader = document.getElementById("monthHeader");
+      const letterBox = document.getElementById("letterBox");
+      calendar.innerHTML = "";
+      letterBox.innerHTML = "";
+      monthHeader.textContent = `${year}年 ${month + 1}月`;
 
-    const monthStr = `${year}年 ${month + 1}月`;
-    monthHeader.textContent = monthStr;
+      // 姨妈记录
+      const periodStartStr = localStorage.getItem("periodStart");
+      const periodStartDate = periodStartStr ? new Date(periodStartStr) : null;
+      const cycle = 28;
 
-    // 补前置空白
-    for (let i = 0; i < firstDay.getDay(); i++) {
-      const blank = document.createElement("div");
-      calendar.appendChild(blank);
-    }
-
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const dateObj = new Date(year, month, day);
-      const monthDayKey = `${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dayDiv = document.createElement("div");
-      dayDiv.className = "day";
-
-      if (day === today.getDate()) {
-        dayDiv.classList.add("today");
+      // 前置空白
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const blank = document.createElement("div");
+        calendar.appendChild(blank);
       }
 
-      if (specialDates[monthDayKey]) {
-        dayDiv.classList.add("special");
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const monthDay = `${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const fullDate = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const div = document.createElement("div");
+        div.className = "day";
+
+        if (
+          day === today.getDate() &&
+          month === today.getMonth() &&
+          year === today.getFullYear()
+        ) {
+          div.classList.add("today");
+        }
+
+        if (specialDates[monthDay]) div.classList.add("special");
+
+        if (periodStartDate) {
+          const diff = Math.floor((date - periodStartDate) / 86400000);
+          if (diff >= 0 && diff % cycle < 5) div.classList.add("period");
+        }
+
+        div.innerHTML = `
+          <div class="day-number">${day}</div>
+          <div class="tag">${specialDates[monthDay]?.name || ""}</div>
+        `;
+
+        div.onclick = () => {
+          if (specialDates[monthDay]) {
+            letterBox.innerHTML = `
+              <h2>${specialDates[monthDay].name}</h2>
+              <p style="white-space: pre-line">${specialDates[monthDay].letter}</p>
+            `;
+          } else if (div.classList.contains("period")) {
+            letterBox.innerHTML = `<p>🩸 这是姨妈期的一天哦，要多抱多亲多揉~</p>`;
+          } else {
+            letterBox.innerHTML = `<p>今天不是特别日，但哥哥也特别爱你。</p>`;
+          }
+        };
+
+        calendar.appendChild(div);
       }
-
-      dayDiv.innerHTML = `
-        <div class="day-number">${day}</div>
-        <div class="tag">${specialDates[monthDayKey] || ""}</div>
-      `;
-
-      // 点击跳转：你后面会用这个结构加载日记页
-      dayDiv.onclick = () => {
-        window.location.href = `day.html?date=${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      };
-
-      calendar.appendChild(dayDiv);
     }
+
+    // 📅 月份控制函数
+    function prevMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    }
+
+    function nextMonth() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    }
+
+    function savePeriod() {
+      const val = document.getElementById("periodStartInput").value;
+      if (!val) return alert("记得选日期哦！");
+      localStorage.setItem("periodStart", val);
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    }
+
+    // ⏱ 启动时加载当月
+    window.onload = () => {
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      const saved = localStorage.getItem("periodStart");
+      if (saved) document.getElementById("periodStartInput").value = saved;
+    };
   </script>
 </body>
 </html>
