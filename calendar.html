@@ -103,9 +103,16 @@
   <div id="letterBox"></div>
 
   <script>
+    
     // 🌸 初始化全局时间状态
     let currentDate = new Date();
-
+const lunarFestivals = {
+    "01-01": "春节",
+    "01-15": "元宵节",
+    "05-05": "端午节",
+    "07-07": "七夕",
+    "08-15": "中秋节"
+  };
     // 🧨 节日数据（支持跨年）
    
 const fixedSolarFestivals = {
@@ -121,6 +128,7 @@ const lunarFestivals = {
 ｝；
 
     function renderCalendar(year, month) {
+      const lunarFestivalMap = getLunarFestivalDatesForYear(year);
       const today = new Date();
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
@@ -168,6 +176,11 @@ const lunarFestivals = {
           <div class="day-number">${day}</div>
           <div class="tag">${specialDates[monthDay]?.name || ""}</div>
         `;
+        if (lunarFestivalMap[monthDay]) {
+  div.classList.add("special");
+  div.innerHTML += `<div class="tag">${lunarFestivalMap[monthDay]}</div>`;
+}
+        
 
         div.onclick = () => {
           if (specialDates[monthDay]) {
