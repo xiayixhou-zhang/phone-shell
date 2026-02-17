@@ -1,57 +1,58 @@
-// wechat-app.js
+// 第一步：脚本加载检查
+alert("1. 脚本加载成功！看到这个说明 HTML 找到了 js 文件");
 
 async function sendMessage() {
+    alert("2. 你点击了发送按钮！");
+
     const input = document.getElementById('user-input');
-    const message = input.value.trim();
+    const chatBox = document.getElementById('chat-box');
     
-    if (message === "") return;
-
-    // 1. 在屏幕上显示你发的消息 (右侧 msg right)
-    renderMessage('right', message, './avatar-user.png'); // 假设你有用户头像
-    input.value = ''; 
-
-    try {
-        // 2. 这里的网址必须是你那个 API 项目的真实地址
-        const response = await fetch('https://my-companion-one.vercel.app/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message }) 
-        });
-
-        const data = await response.json();
-
-        // 3. 在屏幕上显示 GPT-4.1 的回复 (左侧 msg left)
-        if (data.reply) {
-            renderMessage('left', data.reply, './avatar-ai.png');
-        } else {
-            renderMessage('left', "4.1 酱在发呆，没回话...", './avatar-ai.png');
-        }
-    } catch (error) {
-        console.error("连接失败:", error);
-        renderMessage('left', "网络有点问题，4.1 酱失联了 T_T", './avatar-ai.png');
-    }
-}
-
-// 专门负责画微信气泡的函数
-function renderMessage(side, text, avatarUrl) {
-    const chatBox = document.getElementById('chat-box'); // 对应你 HTML 里的 id="chat-box"
-    
-    if (!chatBox) {
-        console.error("找不到 chat-box 容器！");
+    if (!input || !chatBox) {
+        alert("错误：没找到输入框或聊天框，请检查 HTML 里的 ID 是不是叫 user-input 和 chat-box");
         return;
     }
 
-    // 创建微信风格的 HTML 结构
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `msg ${side}`; // 这里会变成 "msg left" 或 "msg right"
+    const message = input.value.trim();
+    if (message === "") return;
+
+    // 第二步：尝试在屏幕上画出你的气泡
+    alert("3. 准备显示你的消息: " + message);
     
-    msgDiv.innerHTML = `
-        <div class="avatar"><img src="${avatarUrl}" alt=""></div>
-        <div class="bubble">${text}</div>
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'msg right';
+    userMsgDiv.innerHTML = `
+        <div class="avatar"><img src="./avatar-user.png" alt=""></div>
+        <div class="bubble">${message}</div>
     `;
+    chatBox.appendChild(userMsgDiv);
     
-    chatBox.appendChild(msgDiv);
-    
-    // 自动滚到最下面
+    input.value = ''; // 清空输入框
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    // 第三步：尝试联系 API
+    alert("4. 准备去呼叫 4.1 酱...");
+
+    try {
+        const response = await fetch('https://my-companion-one.vercel.app/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+        alert("5. API 响应了！内容是: " + JSON.stringify(data));
+
+        if (data.reply) {
+            const aiMsgDiv = document.createElement('div');
+            aiMsgDiv.className = 'msg left';
+            aiMsgDiv.innerHTML = `
+                <div class="avatar"><img src="./avatar-ai.png" alt=""></div>
+                <div class="bubble">${data.reply}</div>
+            `;
+            chatBox.appendChild(aiMsgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    } catch (error) {
+        alert("报错了： " + error);
+    }
 }
