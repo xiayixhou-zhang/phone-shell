@@ -1,58 +1,47 @@
-// 第一步：脚本加载检查
-alert("1. 脚本加载成功！看到这个说明 HTML 找到了 js 文件");
-
 async function sendMessage() {
-    alert("2. 你点击了发送按钮！");
-
     const input = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
-    
-    if (!input || !chatBox) {
-        alert("错误：没找到输入框或聊天框，请检查 HTML 里的 ID 是不是叫 user-input 和 chat-box");
-        return;
-    }
-
     const message = input.value.trim();
+    
     if (message === "") return;
 
-    // 第二步：尝试在屏幕上画出你的气泡
-    alert("3. 准备显示你的消息: " + message);
-    
-    const userMsgDiv = document.createElement('div');
-    userMsgDiv.className = 'msg right';
-    userMsgDiv.innerHTML = `
-        <div class="avatar"><img src="./avatar-user.png" alt=""></div>
-        <div class="bubble">${message}</div>
-    `;
-    chatBox.appendChild(userMsgDiv);
-    
+    // 1. 显示你的蓝色/绿色气泡
+    renderMessage('right', message, './avatar-user.png');
     input.value = ''; // 清空输入框
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // 第三步：尝试联系 API
-    alert("4. 准备去呼叫 4.1 酱...");
 
     try {
+        // 2. 请求 API
         const response = await fetch('https://my-companion-one.vercel.app/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message })
+            body: JSON.stringify({ message: message }) 
         });
 
-        const data = await response.json();
-        alert("5. API 响应了！内容是: " + JSON.stringify(data));
+        if (!response.ok) throw new Error('API 响应失败');
 
+        const data = await response.json();
+
+        // 3. 显示 GPT-4.1 的回复
         if (data.reply) {
-            const aiMsgDiv = document.createElement('div');
-            aiMsgDiv.className = 'msg left';
-            aiMsgDiv.innerHTML = `
-                <div class="avatar"><img src="./avatar-ai.png" alt=""></div>
-                <div class="bubble">${data.reply}</div>
-            `;
-            chatBox.appendChild(aiMsgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            renderMessage('left', data.reply, './avatar-ai.png');
         }
     } catch (error) {
-        alert("报错了： " + error);
+        console.error("API 错误:", error);
+        // 如果报错了，给个提示
+        renderMessage('left', "（对方暂时无法连接，可能是权限没开哦）", './avatar-ai.png');
     }
+}
+
+// 渲染气泡的通用函数
+function renderMessage(side, text, avatarUrl) {
+    const chatBox = document.getElementById('chat-box');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `msg ${side}`;
+    msgDiv.innerHTML = `
+        <div class="avatar"><img src="${avatarUrl}" alt=""></div>
+        <div class="bubble">${text}</div>
+    `;
+    chatBox.appendChild(msgDiv);
+    // 自动滚动到底部
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
